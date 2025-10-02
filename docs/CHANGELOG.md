@@ -1,7 +1,20 @@
 # Changelog
 
-All notable changes to the Conram Contact Form Engine will be documented here.  
-This project follows [semantic versioning](https://semver.org/) (MAJOR.MINOR.PATCH).
+# Changelog
+
+All notable changes to this project will be documented here.  
+This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style.
+
+## [Unreleased]
+- Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
+
+## [2025-09-30] Initial release
+- First public version of the Contact Form Engine.
+- Backend (`contact.php`) with validation, rate limiting, spam protection.
+- Debug endpoint (`contact-echo.php`) for testing integration.
+- Frontend snippet (`contact-form.html`) ready for static html capable sites or platforms.
+- Documentation: prerequisites, flow, and usage notes.
+
 
 ---
 ## [1.1.0] - 2025-10-15
