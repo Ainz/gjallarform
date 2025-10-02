@@ -85,4 +85,4 @@ The Conram approach: **use what’s already available (PHP + sendmail), secure i
 
 ## License
 
-Internal project use. Not licensed for public redistribution.
+Multiple Licensing, see License for details.
