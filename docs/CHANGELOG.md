@@ -7,6 +7,20 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 
 ## [Unreleased]
 - Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
+---
+## [1.1.3] – 2025-10-02
+### Added
+- Automatic confirmation email sent to submitter upon successful delivery.
+  - Uses aligned From (`form-engine@conram.it`) for SPF/DMARC compliance.
+  - Includes polite acknowledgement, original subject, and reference ID.
+  - Adds headers (`Auto-Submitted`, `Precedence`, `X-Auto-Response-Suppress`) to prevent auto-reply loops.
+- Short **Reference ID** now generated server-side.
+  - Included in both admin and submitter mails.
+  - Exposed in JSON response (`ref`) for potential AJAX usage.
+
+### Changed
+- Admin notification subject line now includes `[REF]` for easier tracking.
+- Admin message body starts with `Reference: ...` for consistent traceability.
 
 ---
 ## [1.1.2] – 2025-10-02
