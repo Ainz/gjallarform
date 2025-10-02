@@ -8,8 +8,8 @@ The name *Conram.it Contact Form Engine* is reserved and may not be used for der
 
 ## Support
 Official support is only available via:  
-- Website: [https://www.conram.it/contact](https://www.conram.it/contact)  
-- This GitLab project page  
+- Website: [https://www.domain.tld/contact](https://www.domain.tld/contact)  
+- GitLab project page  
 
 ---
 
@@ -24,4 +24,4 @@ This project is dual-licensed:
 
 - **GPLv3** for open source use (must share modifications).  
 - **Commercial license** available for proprietary or non-GPL use.  
-  Contact [https://www.conram.it](https://www.conram.it) for details.
+  Contact [https://www.domain.tld](https://www.domain.tld) for details.
