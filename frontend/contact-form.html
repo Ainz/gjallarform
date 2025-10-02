@@ -1,0 +1,14 @@
+<form class="cf" accept-charset="utf-8" action="https://service.conram.it/contact.php" method="POST">
+<div class="cf__grid">
+<div><label for="fullname">Name</label> <input id="fullname" title="Max 120 characters" autocomplete="name" maxlength="120" name="fullname" required="" type="text" placeholder="Name and surname please"></div>
+<div><label for="email">Email</label> <input id="email" title="Max 160 characters" autocomplete="email" maxlength="160" name="email" required="" type="email" placeholder="A valid e-mail address"></div>
+<div><label for="subject">Subject</label> <input id="subject" title="Max 140 characters" maxlength="140" name="subject" required="" type="text" placeholder="A subject description"></div>
+<div><label for="phone">Phone (optional)</label> <input id="phone" title="Digits, + - ( ) /, 6–32 chars" maxlength="32" name="phone" pattern="^\+?[0-9\s\-\(\)/]{6,32}$" type="tel" placeholder="+46 70 123 45 67"></div>
+<div class="cf__span-2"><label for="message">Message</label> <textarea id="message" title="Max 4000 characters" maxlength="4000" name="message" required="" rows="6" placeholder="Write your message..."></textarea></div>
+<!-- Honeypot -->
+<div class="hp"><label for="website">Website</label> <input id="website" tabindex="-1" autocomplete="off" name="website" type="text"></div>
+<!-- Tokens / tags --> <input name="form_key" type="hidden" value="conram_v1_2025_09"> <input name="site_tag" type="hidden" value="[www.conram.it Contact form]"> <input name="render_ts" type="hidden" value="">
+<script> document.currentScript.previousElementSibling.value = String(Date.now()); </script>
+<div class="cf__actions cf__span-2"><button type="submit">SEND</button></div>
+</div>
+</form>
