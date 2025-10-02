@@ -1,127 +1,55 @@
 # Prerequisites & Limitations
 
-This document lists what is required for running the Conram Contact Form Engine, and outlines current limitations.
+This document lists what is required for running the Contact Form Engine, and outlines known limitations.
 
 ---
+
 # Template Variables
-
-- **service.domain.tld** → replace with the domain/subdomain where the PHP backend runs.  
-- **form-engine@*** → replace with the dedicated sender mailbox for the project.  
-- **recipient@*** → replace with the actual delivery mailbox.  
-- **site_tag** → replace with a meaningful label for the frontend site (appears in subject).  
-- **form_key** → replace with current anti-CSRF token version.  
+- **service.domain.tld** → replace with backend service domain.  
+- **www.domain.tld** → replace with frontend website domain.  
+- **form-engine@domain.tld** → replace with dedicated sender mailbox.  
+- **recipient@domain.tld** → replace with delivery mailbox.  
+- **site_tag** → identifier string for subject line.  
+- **form_key** → anti-CSRF token version.
 
 ---
-## Domain & Email
 
-- **Dedicated sender mailbox** (recommended): used here `form-engine@*`  
-  - Used for DMARC alignment, filtering, and avoiding mixing with personal mail.  
-- **DNS for deliverability (mandatory):**
-  - **SPF**: must include your host’s outbound mail servers.  
-  - **DKIM**: enabled for used domain.  
-  - **DMARC**: `p=quarantine` or `p=reject`, aligned with the From domain.  
-- **External testing**: use Gmail or similar to confirm  
-  `SPF=pass`, `DKIM=pass`, `DMARC=pass`.
+## Domain & Email
+- Dedicated sender mailbox: `form-engine@domain.tld`.  
+- SPF, DKIM, and DMARC must be configured for sending domain.  
+- Confirm deliverability by testing with external mailbox (e.g. Gmail).
 
 ---
 
 ## Hosting & Runtime
-
 - **PHP**: 8.1+ (8.2 recommended).  
-  - Extensions: none special; `mbstring` useful for Unicode validation.  
-  - Must support `mail()` (sendmail or compatible MTA).  
-- **Web server**: Apache or Nginx.  
-  - HTTPS required on both front-end and service domain.  
-- **CORS**: backend restricted to your site origins.  
-- **Front-end (Publii or static site)**:  
-  - Form posts to `https://service.domain.tlc/contact.php`.  
-  - Required field names:  
-    - `fullname`, `email`, `subject`, `message`.  
-    - Optional: `phone`.  
-    - Hidden: `website` (honeypot), `form_key`, `site_tag`, `render_ts`.  
+- **Mail transport**: PHP `mail()` (sendmail).  
+- **Web server**: Apache or Nginx with HTTPS.  
+- **Static site frontend** posts to `https://service.domain.tld/contact.php`.
 
 ---
 
 ## Security & Abuse Protection
-
-- Honeypot field (hidden).  
-- Static token (`form_key`).  
-- Render time-trap (`render_ts`, ≥2s).  
-- Rate limiting (default: 10 submissions per 30 minutes per IP).  
-- CORS restrictions (only production domains).  
-- HTTPS enforced.  
-
----
-
-## PHP `mail()` (sendmail) vs PHPMailer
-
-### `mail()` (sendmail)
-- **Pros**
-  - Built-in, no dependencies.  
-  - Works on shared hosts.  
-  - With `-f` sender and DKIM at host level → DMARC passes.  
-- **Cons**
-  - Minimal error reporting.  
-  - Harder to send HTML or attachments.  
-  - Deliverability tied to host’s IP reputation.  
-
-### PHPMailer (SMTP)
-- **Pros**
-  - Full SMTP control (TLS, auth, ports, debug).  
-  - Easy HTML + attachments.  
-  - Can use dedicated relay (SES, Mailgun, etc.) for better deliverability.  
-- **Cons**
-  - Needs PHPMailer library installed.  
-  - Requires credentials and more setup.  
-  - Sometimes blocked on shared hosts.  
-
-**Bottom line:** for a plain-text contact form on shared hosting, `mail()` is fine if SPF/DKIM/DMARC are correct. Switch to PHPMailer if you need HTML, attachments, or better diagnostics.
-
----
-
-## Recommended Versions & Settings
-
-- **PHP**: 8.2 (8.1 minimum).  
-- **Web server**: Apache/Nginx current LTS with TLS 1.2+.  
-- **TLS**: Let’s Encrypt or equivalent.  
-- **Charset**: UTF-8 throughout.  
-- **mbstring**: enabled.  
-
----
-
-## Host Compatibility
-
-| Environment                        | Works? | Notes                                                                 |
-|-----------------------------------|--------|----------------------------------------------------------------------|
-| **Shared host (DirectAdmin/cPanel)** | ✅      | Easiest setup with `mail()`. Ensure SPF/DKIM/DMARC are correct.       |
-| **VPS (own Postfix/Exim)**        | ✅✅    | Full control. Add firewall/abuse protection.                          |
-| **Static hosting (Netlify/Vercel)** | ✅      | Works for front-end, but backend must run elsewhere.                  |
-| **Serverless functions**          | ⚠️      | Possible, but outbound email often requires external SMTP/API.        |
+- CORS restrictions.  
+- Honeypot hidden field.  
+- CSRF token.  
+- Render time-trap (`render_ts`).  
+- Rate limiting (10 submissions per 30 minutes per IP).  
+- No attachments, plain-text only.
 
 ---
 
 ## Limitations
-
-- **Daily mail caps**: host may limit messages (e.g. ~50/day).  
-- **No logging**: current handler does not store submissions (privacy-friendly).  
-- **Error UX**: JSON error codes only; no client-friendly messages yet.  
-- **Spam resistance**: relies on honeypot + time-trap + rate limit.  
-- **International input**:  
-  - Name/Subject: extended Latin allowed (å/ä/ö/ø/æ/é), emojis blocked.  
-  - Phone: digits + `+ - ( ) /`, 6–32 chars.  
-- **CORS origins**: must be updated if adding staging/test domains.  
-- **Token rotation**: `form_key` should be rotated periodically.  
-- **No attachments**: plain-text mail only.
+- Shared hosting may cap messages (e.g. ~50/day).  
+- No persistent logging by default (privacy-friendly).  
+- Error handling is JSON only.  
+- Spam resistance: honeypot + time-trap + rate limiting.  
+- International characters supported (å/ä/ö/ø/æ/é). Emojis blocked.  
 
 ---
 
-## Future Enhancements
-
-### In no specific order
-
-- Switchable PHPMailer/SMTP transport.  
-- Redirect on success (`/thanks.html`) instead of raw JSON.
-- Error management pages instead of raw JSON
-- Linked JS for client-side error mapping and live counters.  
-- Server-side logging (file or DB, GDPR-aware).  
-- Monitoring/alerts if `mail()` failures repeat.  
+## Roadmap
+- Optional PHPMailer/SMTP transport.  
+- Client-side error messages.  
+- Linked JS counters via `data-count`.  
+- Optional logging for auditing.
