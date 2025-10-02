@@ -85,4 +85,4 @@ The Conram approach: **use what’s already available (PHP + sendmail), secure i
 
 ## License
 
-Multiple Licensing, see License for details.
+Multiple Licensing, see [License](LICENSE) for details.
