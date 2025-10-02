@@ -3,7 +3,15 @@
 This document lists what is required for running the Conram Contact Form Engine, and outlines current limitations.
 
 ---
+# Template Variables
 
+- **service.domain.tld** → replace with the domain/subdomain where the PHP backend runs.  
+- **form-engine@*** → replace with the dedicated sender mailbox for the project.  
+- **recipient@*** → replace with the actual delivery mailbox.  
+- **site_tag** → replace with a meaningful label for the frontend site (appears in subject).  
+- **form_key** → replace with current anti-CSRF token version.  
+
+---
 ## Domain & Email
 
 - **Dedicated sender mailbox** (recommended): used here `form-engine@*`  
