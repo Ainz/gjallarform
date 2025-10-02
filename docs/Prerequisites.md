@@ -6,11 +6,11 @@ This document lists what is required for running the Conram Contact Form Engine,
 
 ## Domain & Email
 
-- **Dedicated sender mailbox** (recommended): `form-engine@conram.it`  
+- **Dedicated sender mailbox** (recommended): used here `form-engine@*`  
   - Used for DMARC alignment, filtering, and avoiding mixing with personal mail.  
 - **DNS for deliverability (mandatory):**
   - **SPF**: must include your host’s outbound mail servers.  
-  - **DKIM**: enabled for `conram.it`.  
+  - **DKIM**: enabled for used domain.  
   - **DMARC**: `p=quarantine` or `p=reject`, aligned with the From domain.  
 - **External testing**: use Gmail or similar to confirm  
   `SPF=pass`, `DKIM=pass`, `DMARC=pass`.
@@ -26,7 +26,7 @@ This document lists what is required for running the Conram Contact Form Engine,
   - HTTPS required on both front-end and service domain.  
 - **CORS**: backend restricted to your site origins.  
 - **Front-end (Publii or static site)**:  
-  - Form posts to `https://service.conram.it/contact.php`.  
+  - Form posts to `https://service.domain.tlc/contact.php`.  
   - Required field names:  
     - `fullname`, `email`, `subject`, `message`.  
     - Optional: `phone`.  
@@ -110,7 +110,8 @@ This document lists what is required for running the Conram Contact Form Engine,
 ## Future Enhancements
 
 - Switchable PHPMailer/SMTP transport.  
-- Redirect on success (`/thanks.html`) instead of raw JSON.  
+- Redirect on success (`/thanks.html`) instead of raw JSON.
+- Error management pages instead of raw JSON
 - Linked JS for client-side error mapping and live counters.  
 - Server-side logging (file or DB, GDPR-aware).  
 - Monitoring/alerts if `mail()` failures repeat.  
