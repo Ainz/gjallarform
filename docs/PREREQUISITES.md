@@ -117,6 +117,8 @@ This document lists what is required for running the Conram Contact Form Engine,
 
 ## Future Enhancements
 
+**In no specific order
+
 - Switchable PHPMailer/SMTP transport.  
 - Redirect on success (`/thanks.html`) instead of raw JSON.
 - Error management pages instead of raw JSON
