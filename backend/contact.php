@@ -73,6 +73,16 @@ if (count($hits) >= $lim) {
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers (sanitization & policy)
 // ─────────────────────────────────────────────────────────────────────────────
+
+function redirect_back_with_error(string $code): void {
+  // point to your public contact form
+  $back = 'https://www.conram.it/contact-form.html';
+  // add err=code (no payloads, privacy-safe)
+  $sep = (strpos($back,'?')!==false) ? '&' : '?';
+  header('Location: ' . $back . $sep . 'err=' . urlencode($code), true, 303);
+  exit;
+}
+
 function strip_controls(string $s): string {
   return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $s) ?? '';
 }
