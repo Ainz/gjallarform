@@ -13,13 +13,9 @@
  * - Mail: uses sendmail with -f (DMARC alignment via form-engine@conram.it)
  * - Responses:
  *     • AJAX/fetch callers → JSON
- *     • Normal form POST  → 303 redirect to thank-you.html (PRG pattern)
- *
- * NEW IN 1.1.2
- * - 303 redirect to /thank-you.html for normal posts (no JSON blob shown to users)
- * - Short Reference ID added and included in admin/confirmation emails
- * - Confirmation email sent to submitter after successful admin mail
- * - Conditional Content-Type headers (JSON only when returning JSON)
+ *     • Normal form POST  → 303 redirect (PRG):
+ *         - success:  thank-you.html
+ *         - failures: contact-form.html?err=<code>
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -41,18 +37,28 @@ header('Access-Control-Allow-Methods: POST'); // informative
 $wantsJson = (isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)
           || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
 
-// Map site_tag → thank-you URL (whitelist to avoid open redirects)
+// Public URLs
 function thank_you_url(string $siteTag): string {
   static $map = [
     '[www.conram.it Contact form]' => 'https://www.conram.it/thank-you.html',
-    // Add more mappings if you post from other sites:
-    // '[conram.se Contact form]' => 'https://www.conram.se/thank-you.html',
+    // '[conram.se Contact form]'   => 'https://www.conram.se/thank-you.html',
   ];
   return $map[$siteTag] ?? 'https://www.conram.it/thank-you.html';
 }
+function contact_form_url(): string {
+  return 'https://www.conram.it/contact-form.html';
+}
+
+// Redirect back with a tiny error code (for non-AJAX callers)
+function redirect_back_with_error(string $code): void {
+  $back = contact_form_url();
+  $sep  = (strpos($back, '?') !== false) ? '&' : '?';
+  header('Location: ' . $back . $sep . 'err=' . urlencode($code), true, 303);
+  exit;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Rate limit: per-IP sliding window (10 posts / 30 min)
+// Rate limit: per-IP sliding window (10 posts / 30 min)  (file-based; ephemeral)
 // ─────────────────────────────────────────────────────────────────────────────
 $ip  = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 $now = time();
@@ -64,25 +70,19 @@ $filtered = [];
 foreach ($hits as $t) { if (($now - (int)$t) < $win) { $filtered[] = (int)$t; } }
 $hits = $filtered;
 if (count($hits) >= $lim) {
-  http_response_code(429);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'rate_limited']);
+  if ($wantsJson) {
+    http_response_code(429);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'rate_limited']);
+  } else {
+    redirect_back_with_error('rate_limited');
+  }
   exit;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers (sanitization & policy)
 // ─────────────────────────────────────────────────────────────────────────────
-
-function redirect_back_with_error(string $code): void {
-  // point to your public contact form
-  $back = 'https://www.conram.it/contact-form.html';
-  // add err=code (no payloads, privacy-safe)
-  $sep = (strpos($back,'?')!==false) ? '&' : '?';
-  header('Location: ' . $back . $sep . 'err=' . urlencode($code), true, 303);
-  exit;
-}
-
 function strip_controls(string $s): string {
   return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $s) ?? '';
 }
@@ -96,7 +96,6 @@ function sanitize_line(string $s, int $max = 160): string {
 }
 function sanitize_textblock(string $s, int $max = 4000): string {
   $s = trim(strip_controls($s));
-  // Wrap extremely long unbroken sequences to avoid filters/abuse patterns
   $s = preg_replace_callback('/\S{200,}/u', static function($m) {
     return wordwrap($m[0], 80, ' ', true);
   }, $s) ?? $s;
@@ -107,7 +106,6 @@ function sanitize_phone(string $s): string {
   return trim(preg_replace('/\s{2,}/u', ' ', $s));
 }
 function is_safe_line_unicode(string $s): bool {
-  // Allow letters, marks, numbers, spaces, and common punctuation; block emoji/pictographs
   return (bool)preg_match('/^[\p{L}\p{M}\p{N}\s\-\_\.\,\:\;\!\?\(\)\'"\/&]+$/u', $s);
 }
 function contains_emoji(string $s): bool {
@@ -143,9 +141,13 @@ if ($website !== '') {
 }
 
 if ($key !== 'conram_v1_2025_09') {
-  http_response_code(400);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'bad_key']);
+  if ($wantsJson) {
+    http_response_code(400);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'bad_key']);
+  } else {
+    redirect_back_with_error('validation');
+  }
   exit;
 }
 
@@ -153,9 +155,13 @@ if ($key !== 'conram_v1_2025_09') {
 if ($renderTs > 0) {
   $elapsedMs = (int)(microtime(true) * 1000) - $renderTs;
   if ($elapsedMs < 2000) {
-    http_response_code(400);
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['ok' => false, 'error' => 'too_fast']);
+    if ($wantsJson) {
+      http_response_code(400);
+      header('Content-Type: application/json; charset=utf-8');
+      echo json_encode(['ok' => false, 'error' => 'too_fast']);
+    } else {
+      redirect_back_with_error('too_fast');
+    }
     exit;
   }
 }
@@ -164,46 +170,60 @@ if ($renderTs > 0) {
 // Required-field validation
 // ─────────────────────────────────────────────────────────────────────────────
 if ($name === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $subject === '' || $message === '') {
-  http_response_code(400);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'validation']);
+  if ($wantsJson) {
+    http_response_code(400);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'validation']);
+  } else {
+    redirect_back_with_error('validation');
+  }
   exit;
 }
 
 // Name/Subject charset policy (allow å/ä/ö/ø/æ/é etc., block emojis/pictographs)
 if (!is_safe_line_unicode($name)) {
-  http_response_code(400);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'name_charset']);
+  if ($wantsJson) {
+    http_response_code(400);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'name_charset']);
+  } else {
+    redirect_back_with_error('validation');
+  }
   exit;
 }
 if (!is_safe_line_unicode($subject)) {
-  http_response_code(400);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'subject_charset']);
+  if ($wantsJson) {
+    http_response_code(400);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'subject_charset']);
+  } else {
+    redirect_back_with_error('validation');
+  }
   exit;
 }
 
 // Message: block emojis (controls already stripped in sanitize_textblock)
 if (contains_emoji($message)) {
-  http_response_code(400);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'message_emoji_blocked']);
+  if ($wantsJson) {
+    http_response_code(400);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'message_emoji_blocked']);
+  } else {
+    redirect_back_with_error('validation');
+  }
   exit;
 }
 
 // Phone (optional): only digits/space/+ - ( ) / ; length 6–32
 if ($phone !== '') {
-  if (!preg_match('/^\+?[0-9\s\-\(\)\/]{6,32}$/u', $phone)) {
-    http_response_code(400);
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['ok'=>false,'error'=>'phone_invalid']);
-    exit;
-  }
-  if (preg_match('/[A-Za-z]/', $phone)) {
-    http_response_code(400);
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['ok'=>false,'error'=>'phone_invalid']);
+  if (!preg_match('/^\+?[0-9\s\-\(\)\/]{6,32}$/u', $phone) || preg_match('/[A-Za-z]/', $phone)) {
+    if ($wantsJson) {
+      http_response_code(400);
+      header('Content-Type: application/json; charset=utf-8');
+      echo json_encode(['ok'=>false,'error'=>'phone_invalid']);
+    } else {
+      redirect_back_with_error('validation');
+    }
     exit;
   }
   // Normalize spacing
@@ -212,9 +232,13 @@ if ($phone !== '') {
 
 // Optional link block (disabled by default)
 // if (preg_match('/https?:\/\/|www\./i', $message)) {
-//   http_response_code(400);
-//   header('Content-Type: application/json; charset=utf-8');
-//   echo json_encode(['ok' => false, 'error' => 'links_not_allowed']);
+//   if ($wantsJson) {
+//     http_response_code(400);
+//     header('Content-Type: application/json; charset=utf-8');
+//     echo json_encode(['ok' => false, 'error' => 'links_not_allowed']);
+//   } else {
+//     redirect_back_with_error('validation');
+//   }
 //   exit;
 // }
 
@@ -225,16 +249,15 @@ $to      = 'rikard.malmborg@conram.it';    // Admin recipient
 $from    = 'form-engine@conram.it';        // DMARC-aligned envelope & From
 $tag     = $siteTag !== '' ? $siteTag : '[Conram.it Contact]';
 
-// Generate a short Reference ID (6 hex chars, e.g., 9KX7Q2)
+// Short Reference ID (6 hex chars, e.g., C545D2)
 try {
   $ref = strtoupper(bin2hex(random_bytes(3)));
 } catch (\Throwable $e) {
-  // Fallback if random_bytes is unavailable
   $ref = strtoupper(substr(md5(uniqid('', true)), 0, 6));
 }
 
 // Admin mail subject/body (include [REF])
-$subj    = no_crlf($tag . ' [' . $ref . '] ' . $subject); // guard against header injection
+$subj    = no_crlf($tag . ' [' . $ref . '] ' . $subject);
 
 $body  = "Reference: {$ref}\n";
 $body .= "Name: {$name}\n";
@@ -257,11 +280,11 @@ $headers_str = implode("\r\n", $headers);
 $ok = @mail($to, $subj, $body, $headers_str, "-f {$from}");
 
 if ($ok) {
-  // Rate-limit bookkeeping
+  // Rate-limit bookkeeping (ephemeral)
   $hits[] = $now;
   @file_put_contents($rlf, json_encode($hits), LOCK_EX);
 
-  // ─ Confirmation email to submitter (fire-and-forget) ──────────────────────
+  // Confirmation email to submitter (fire-and-forget)
   $firstName = explode(' ', trim($name))[0] ?: 'there';
   $confirmTo = $email;
 
@@ -278,7 +301,7 @@ if ($ok) {
   $confirmHeaders[] = "From: Conram Forms <{$from}>";             // aligned with SPF/DMARC
   $confirmHeaders[] = "Reply-To: " . no_crlf("Rikard <{$to}>");   // replies to you
   $confirmHeaders[] = "Content-Type: text/plain; charset=UTF-8";
-  // Suppress auto-reply loops in MTAs
+  // Suppress auto-reply loops
   $confirmHeaders[] = "Auto-Submitted: auto-replied";
   $confirmHeaders[] = "Precedence: auto-reply";
   $confirmHeaders[] = "X-Auto-Response-Suppress: All";
@@ -287,18 +310,23 @@ if ($ok) {
 
   @mail($confirmTo, $confirmSubject, $confirmBody, $confirmHeaders_str, "-f {$from}");
 
-  // ─ Return/redirect based on caller type ───────────────────────────────────
+  // Return/redirect based on caller type
   if ($wantsJson) {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['ok' => true, 'ref' => $ref], JSON_UNESCAPED_UNICODE);
   } else {
-    header('Location: ' . thank_you_url($siteTag), true, 303); // PRG redirect to thank-you.html
+    header('Location: ' . thank_you_url($siteTag), true, 303);
   }
   exit;
 
 } else {
-  http_response_code(500);
-  header('Content-Type: application/json; charset=utf-8');
-  echo json_encode(['ok' => false, 'error' => 'send_failed']);
+  if ($wantsJson) {
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['ok' => false, 'error' => 'send_failed']);
+  } else {
+    // Treat as temporary fail → send user back to form
+    redirect_back_with_error('tempfail');
+  }
   exit;
 }
