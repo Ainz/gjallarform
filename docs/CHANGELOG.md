@@ -7,8 +7,12 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 ## [Unreleased]
 - Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
 ---
+## Name change to Contactulus
+### Why “Contactulus”?
+From Latin contactus (connection, touch) and the diminutive suffix -ulus, Contactulus means “a little contact.”
+It reflects the project’s goal: a small, efficient contact form that keeps communication simple and self-contained.
+---
 ## Conram Contact Form Engine — v1.1.4 - 7 october 2025
-
 ### Highlights
 - Added client-side error management with friendly user feedback.
 - Introduced `contact.php` redirect handling (`thank-you.html` and `?err=` return paths).
@@ -100,5 +104,6 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
 
 
