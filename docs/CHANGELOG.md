@@ -1,12 +1,29 @@
 # Changelog
 
-# Changelog
 
 All notable changes to this project will be documented here.  
 This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style.
 
 ## [Unreleased]
 - Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
+---
+## Conram Contact Form Engine — v1.1.4 - 7 october 2025
+
+### 🚀 Highlights
+- Added client-side error management with friendly user feedback.
+- Introduced `contact.php` redirect handling (`thank-you.html` and `?err=` return paths).
+- Added submitter confirmation emails with reference IDs.
+- Integrated draft cache (prevents message loss during validation errors).
+- Refined input validation and honeypot logic.
+
+### 🧰 Maintenance
+- Codebase synchronized across GitLab and GitHub.
+- Documentation refined (`FORM_FLOW.md`, `PREREQUISITES.md`, `CHANGELOG.md`).
+- Dual-license model clarified (GPLv3 + commercial option).
+
+### 🧪 Tested
+- Verified mail delivery and auto-confirmation on PHP 8.2 shared hosting.
+- Verified front-end operation on Publii static sites.
 ---
 ## [1.1.3] – 2025-10-02
 ### Added
@@ -83,3 +100,4 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
