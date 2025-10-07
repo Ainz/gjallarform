@@ -16,7 +16,7 @@ This document lists what is required for running the Contact Form Engine, and ou
 
 ## Domain & Email
 - Dedicated sender mailbox: `form-engine@domain.tld`.  
-- SPF, DKIM, and DMARC must be configured for sending domain.  
+- SPF, DKIM, and DMARC is a highly recommended configuration for sending domain.  
 - Confirm deliverability by testing with external mailbox (e.g. Gmail).
 
 ---
@@ -24,7 +24,7 @@ This document lists what is required for running the Contact Form Engine, and ou
 ## Hosting & Runtime
 - **PHP**: 8.1+ (8.2 recommended).  
 - **Mail transport**: PHP `mail()` (sendmail).  
-- **Web server**: Apache or Nginx with HTTPS.  
+- **Web server**: Apache or Nginx with HTTPS. (Host proivder.)
 - **Static site frontend** posts to `https://service.domain.tld/contact.php`.
 
 ---
@@ -53,3 +53,4 @@ This document lists what is required for running the Contact Form Engine, and ou
 - Client-side error messages.  
 - Linked JS counters via `data-count`.  
 - Optional logging for auditing.
+
