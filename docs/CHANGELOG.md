@@ -10,8 +10,9 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 ## Name change to Contactulus
 ### Why “Contactulus”?
 
-From Latin contactus (connection, touch) and the diminutive suffix -ulus, Contactulus means “a little contact.”
+From Latin "contactus" (connection, touch) and the diminutive suffix -ulus, Contactulus means “a little contact.”
 It reflects the project’s goal: a small, efficient contact form that keeps communication simple and self-contained.
+
 ---
 ## Conram Contact Form Engine — v1.1.4 - 7 october 2025
 ### Highlights
@@ -105,6 +106,7 @@ It reflects the project’s goal: a small, efficient contact form that keeps com
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
 
 
 
