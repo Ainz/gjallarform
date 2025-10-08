@@ -7,7 +7,7 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 ## [Unreleased]
 - Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
 ---
-## [1.2.0] – 2025-10-xx
+## [1.2.0] – 2025-10-08
 ### Changed
 - Front-end assets consolidated into a single hosted file:
   `https://service.conram.it/contactulus/contactulus.js`
@@ -125,6 +125,7 @@ It reflects the project’s goal: a small, efficient contact form that keeps com
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
 
 
 
