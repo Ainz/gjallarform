@@ -7,6 +7,25 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 ## [Unreleased]
 - Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
 ---
+## [1.2.0] – 2025-10-xx
+### Changed
+- Front-end assets consolidated into a single hosted file:
+  `https://service.conram.it/contactulus/contactulus.js`
+- Form and Thank-you pages now include one `<script>`; CSS is injected automatically.
+
+### Deprecated
+- `frontend/assets/js/contact-thanks.js` – replaced by the hosted script.
+  Will be removed in the next release.
+
+### Fixed
+- Wider, more resilient 2-column grid; clearer spacing.
+- F5/back-forward cache: form no longer repopulates on plain reload;
+  drafts only restore on `?err=…` bounce.
+
+### Docs
+- Added `docs/MIGRATION-1.2.md` with upgrade steps.
+
+---
 ## Name change to Contactulus
 ### Why “Contactulus”?
 
@@ -106,6 +125,7 @@ It reflects the project’s goal: a small, efficient contact form that keeps com
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
 
 
 
