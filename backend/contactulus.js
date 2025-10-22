@@ -1,3 +1,12 @@
+/*!
+ * Contactulus — lightweight contact form UI helpers
+ * © 2025–present Conram.it. All rights reserved.
+ * SPDX-License-Identifier: Proprietary
+ * https://www.conram.it
+ */
+"use strict";
+
+
 /*! Contactulus UI helper
     - Injects CSS (so Publii doesn't strip <link>)
     - Draft cache (sessionStorage) to avoid losing long messages
@@ -64,16 +73,7 @@ var CSS = `
 .hp { position: absolute; left: -500vw; top: -500vh; height: 0; width: 0; overflow: hidden; }
 .cf-error { background: #ffe9e9; color: #7a1b1b; padding: .75rem 1rem; border-radius: .55rem; margin: .25rem 0 .75rem; }
 
-/* Thank-you page container */
-.ty { max-width: 48rem; margin: 2rem auto; padding: 0 1rem; }
-
 /* Break to 1 column sooner on mid-width layouts */
-@media (max-width: 900px) {
-  .cf { grid-template-columns: 1fr; }
-}
-`;
-
-/* Mobile: single column with full-width fields */
 @media (max-width: 900px) {
   .cf { grid-template-columns: 1fr; }
 }
@@ -205,11 +205,6 @@ var CSS = `
   document.addEventListener('submit', function (ev) {
     var f = ev.target;
     if (!(f instanceof HTMLFormElement)) return;
-
-    // Identify our form: action to service site OR class="cf"
-    var action = (f.getAttribute('action') || '').trim();
-    var ours = /^https:\/\/service\.conram\.it\/contact\.php$/i.test(action) || f.classList.contains('cf');
-    if (!ours) return;
 
     // Always capture a draft before navigation
     captureDraft(f);
