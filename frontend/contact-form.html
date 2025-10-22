@@ -1,21 +1,26 @@
-<!-- contact-form.html (for Publii) -->
+<!--
+  Contactulus — contact form pages
+  © 2025–present Conram.it. All rights reserved.
+  SPDX-License-Identifier: Proprietary
+  https://www.conram.it
+--><!-- contact-form.html (for Publii) -->
 <section class="contactulus-wrapper">
-<h2>Contact</h2>
-<form class="cf" accept-charset="utf-8" action="https://service.conram.it/contact.php" method="POST"><!-- global error banner (auto-filled by JS) -->
+<h2>Send me a message about anything you read here, or just to get in touch...</h2>
+<p>I will do my best to get back within a couple of days...</p>
+<form class="cf" accept-charset="utf-8" action="https://www.conram.it/contactulus/contact.php" method="POST"><!-- global error banner (auto-filled by JS) -->
 <div id="cf-error" class="cf-error" hidden=""></div>
-<div class="cf__grid">
-<div><label for="fullname">Name</label> <input id="fullname" name="fullname" maxlength="120" autocomplete="name" required="" placeholder="Name and surname please" type="text"></div>
-<div><label for="email">Email</label> <input id="email" name="email" type="email" maxlength="160" autocomplete="email" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" title="Use a standard ASCII email address (no accented characters)" required="" placeholder="Type your e-mail here"></div>
-<div><label for="subject">Subject</label> <input id="subject" name="subject" maxlength="140" required="" placeholder="Subject of your message" type="text"></div>
-<div><label for="phone">Phone (optional)</label> <input id="phone" name="phone" type="tel" maxlength="32" pattern="^\+?[0-9\s\-\(\)/]{6,32}$" placeholder="+00 70 123 45 67"></div>
-<div class="cf__span-2"><label for="message">Message</label> <textarea id="message" maxlength="4000" name="message" required="" rows="6" placeholder="Write your message..."></textarea></div>
+<div><label for="fullname">Name</label> <input id="fullname" name="fullname" maxlength="120" autocomplete="name" required="" placeholder="Name and surname please" type="text" title="Max 120 characters..."></div>
+<div><label for="email">Email</label> <input id="email" name="email" type="email" maxlength="160" autocomplete="email" pattern="^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$" required="" placeholder="Type an e-mail address" title="Max 140 characters...(no accented characters)"></div>
+<div><label for="subject">Subject</label> <input id="subject" name="subject" maxlength="140" required="" placeholder="Subject of your message" type="text" title="Max 140 characters..."></div>
+<div><label for="phone">Phone (optional)</label> <input id="phone" name="phone" type="tel" maxlength="32" pattern="^\+?[0-9\s\-\(\)/]{6,32}$" placeholder="+00 70 123 45 67" title="/ and - and + are usable with up to 64 numbers"></div>
+<div class="cf__span-2"><label for="message">Message</label> <textarea id="message" title="Max 4000 characters..." maxlength="4000" name="message" required="" rows="6" placeholder="Write your message..."></textarea></div>
 <!-- Honeypot -->
 <div class="hp"><label for="website">Website</label> <input id="website" name="website" autocomplete="off" type="text" tabindex="-1"></div>
 <!-- hidden tokens --> <input name="form_key" type="hidden" value="conram_v1_2025_09"> <input name="site_tag" type="hidden" value="[www.conram.it Contact form]"> <input name="render_ts" type="hidden" value="">
 <script>document.currentScript.previousElementSibling.value = String(Date.now());</script>
 <div class="cf__actions cf__span-2"><button type="submit">Send Message</button></div>
-</div>
 </form><!-- single engine file (injects CSS + handles UX/thank-you) -->
-<script src="https://service.conram.it/contactulus/contactulus.js" defer="defer"></script>
+<script src="https://www.conram.it/contactulus/contactulus.js" defer="defer"></script>
 </section>
-<p>Please make sure you enter all relevant details correctly, if they are not accurate we may not be able to respond.</p>
+<p>Fields with red border are mandatory. Please make sure you enter all relevant details correctly, if they are not accurate we may not be able to respond.</p>
+<p>⚠️ I’ll only use your details to reply to your message and won’t share them with third parties.</p>
