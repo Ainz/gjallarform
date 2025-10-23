@@ -7,6 +7,34 @@ This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style
 ## [Unreleased]
 - Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
 ---
+## [1.3.0] – 2025-10-22
+
+### Added
+- **Submitter receipt now includes a full copy** of the submitted message (subject, timestamp, fields, and body).
+- Copyright headers added to **PHP**, **JS**, and **HTML**.
+
+### Changed
+- **Self-contained distribution** under `/contactulus/` (no external service dependencies).
+- **Form action** now targets local handler: `https://www.conram.it/contactulus/contact.php`.
+- **Minimal PHP handler** (production build): POST-only, PRG 303 to `/thank-you.html`, honeypot, render-time trap, form key, basic validation.
+- **Deliverability hardened:** use `-f form-engine@conram.it` (envelope sender) on **both** admin and confirmation mails for SPF/DMARC alignment.
+- **Confirmation copy** reordered for clarity: header → summary → full message → footer.
+- **JS** keeps scoped, injected CSS within the component; removed thank-you page styling from JS.
+- Microcopy updates on form & thank-you pages (reply timeframe; privacy note).
+
+### Fixed
+- Missing final PRG redirect lines in `contact.php` (could block thank-you navigation).
+- Stray duplicate CSS template literal in `contactulus.js` (could break injection).
+- Minor attribute hygiene (`title`, placeholders, autocomplete/inputmode tweaks).
+
+### Deprecated
+- Hosted endpoint and asset at `https://service.conram.it/...` (replaced by local `/contactulus/`).
+- Thank-you personalization via `sessionStorage` remains in code but is **optional** and may be removed in a future major.
+
+### Docs
+- Suggested repo layout and minimal README guidance (install snippet, config keys, envelope-sender note).
+
+
 ## [1.2.0] – 2025-10-08
 ### Changed
 - Front-end assets consolidated into a single hosted file:
@@ -125,6 +153,7 @@ It reflects the project’s goal: a small, efficient contact form that keeps com
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
 
 
 
