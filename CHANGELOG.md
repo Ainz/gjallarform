@@ -1,11 +1,9 @@
 # Changelog
 
-
 All notable changes to this project will be documented here.  
-This file follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) style.
 
 ## [Unreleased]
-- Planned improvements: client-side error mapping, optional live counters, optional logging, optional PHPMailer support.
+- Planned improvements: client-side error mapping, optional live counters, optional logging, optional form items.
 ---
 ## [1.3.0] – 2025-10-22
 
@@ -153,6 +151,7 @@ It reflects the project’s goal: a small, efficient contact form that keeps com
 - Friendly client-side error message mapping.
 - Optional live character counters via external JS.
 - Message logging to file or database (for archival/audit).
+
 
 
 
