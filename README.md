@@ -8,6 +8,30 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 ---
 
+## Table of Contents
+
+- [Why Contactulus?](#why-contactulus)
+- [Quick Start](#quick-start)
+  - [Prerequisites](#1-prerequisites)
+  - [Installation](#2-installation)
+  - [Test It](#3-test-it)
+- [Defense Tiers Explained](#defense-tiers-explained)
+  - [Basic](#basic-recommended-for-most-users)
+  - [Standard](#standard-default)
+  - [Strict](#strict-future)
+- [Form Flow](#form-flow)
+- [Configuration Reference](#configuration-reference)
+- [Customization](#customization)
+- [Troubleshooting](#troubleshooting)
+- [Security Notes](#security-notes)
+- [GDPR and Privacy Compliance](#gdpr-and-privacy-compliance)
+- [Deployment Checklist](#deployment-checklist)
+- [License](#license)
+- [Support & Contribution](#support--contribution)
+- [Roadmap](#roadmap)
+
+---
+
 ## Why Contactulus?
 
 **Built for Real Constraints**
@@ -68,7 +92,7 @@ Open `contact.php` and edit only the `$CFG` array:
 $CFG = [
   // Mail routing
   'to'          => 'you@yourdomain.com',        // Where submissions go
-  'from'        => 'form-engine@yourdomain.com', // MUST be on your domain , van be the same as the submission address
+  'from'        => 'form-engine@yourdomain.com', // MUST be on your domain
   'fromDisplay' => 'Your Site Contact Form',
   'replyDisplay'=> 'Your Site',
   
@@ -418,38 +442,6 @@ To disable IP logging, remove this line from `contact.php`:
 ```php
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 ```
-## GDPR and Privacy Compliance
-
-**Data Contactulus Processes:**
-- User-provided: name, email, subject, message
-- Automatically collected: IP address, submission timestamp
-
-**Data Storage:**
-- No database storage
-- Data transmitted via email only
-- Emails stored according to your mail provider's policies
-
-**Operator Responsibilities:**
-As the site operator, you must:
-- [ ] Display a privacy notice on your contact form (example included)
-- [ ] Inform users that IP addresses are logged
-- [ ] Have a privacy policy covering form submissions
-- [ ] Comply with GDPR, CCPA, or applicable privacy laws in your jurisdiction
-- [ ] Implement data retention policies for emails received
-- [ ] Provide a way for users to request data deletion (manual: delete their emails)
-
-**Contactulus does not:**
-- Store data in databases
-- Use cookies or tracking
-- Share data with third parties
-- Retain data beyond email transmission
-
-**Your HTML already includes:**
-```html
-⚠️ I'll only use your details to reply to your message and won't share them with 
-third parties. The IP address is logged for spam prevention usage.
-```
-This notice is required and should not be removed.
 
 ---
 
@@ -475,10 +467,19 @@ Before going live:
 
 ## License
 
-© 2025–present Conram.it. All rights reserved.  
-SPDX-License-Identifier: Proprietary
+Contactulus is free software licensed under the GNU General Public License v3.0 or later.
 
-See LICENSE file for full terms.
+© 2025–present Conram.it  
+SPDX-License-Identifier: GPL-3.0-or-later
+
+See [LICENSE](LICENSE) file for full terms.
+
+You are free to:
+- Use Contactulus for any purpose
+- Study and modify the source code
+- Distribute original or modified versions
+
+Under the condition that derivative works are also licensed under GPL-3.0-or-later.
 
 ---
 
