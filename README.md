@@ -418,7 +418,39 @@ To disable IP logging, remove this line from `contact.php`:
 ```php
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 ```
+## GDPR and Privacy Compliance
 
+**Data Contactulus Processes:**
+- User-provided: name, email, subject, message
+- Automatically collected: IP address, submission timestamp
+
+**Data Storage:**
+- No database storage
+- Data transmitted via email only
+- Emails stored according to your mail provider's policies
+
+**Operator Responsibilities:**
+As the site operator, you must:
+- [ ] Display a privacy notice on your contact form (example included)
+- [ ] Inform users that IP addresses are logged
+- [ ] Have a privacy policy covering form submissions
+- [ ] Comply with GDPR, CCPA, or applicable privacy laws in your jurisdiction
+- [ ] Implement data retention policies for emails received
+- [ ] Provide a way for users to request data deletion (manual: delete their emails)
+
+**Contactulus does not:**
+- Store data in databases
+- Use cookies or tracking
+- Share data with third parties
+- Retain data beyond email transmission
+
+**Your HTML already includes:**
+```html
+⚠️ I'll only use your details to reply to your message and won't share them with 
+third parties. The IP address is logged for spam prevention usage.
+```
+
+This notice is required and should not be removed.
 ---
 
 ## Deployment Checklist
