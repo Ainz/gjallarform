@@ -449,7 +449,6 @@ As the site operator, you must:
 ⚠️ I'll only use your details to reply to your message and won't share them with 
 third parties. The IP address is logged for spam prevention usage.
 ```
-
 This notice is required and should not be removed.
 ---
 
