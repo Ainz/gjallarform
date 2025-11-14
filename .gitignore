@@ -1,0 +1,25 @@
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log
+
+# Private config backups
+*.backup
+*.bak
+config.local.php
+
+# Test files
+test-*.php
+test-*.html
+debug-*.php
