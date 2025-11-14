@@ -1,162 +1,93 @@
 # Changelog
 
-All notable changes to this project will be documented here.  
+All notable changes to Contactulus will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.99-RC] - 2025-11-15
+
+### About This Release
+Release Candidate for Contactulus 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
+
+### Core Features
+
+**Defense System (Tiered)**
+- Honeypot field (primary bot defense, always enabled)
+- Time trap with graceful degradation (optional, configurable)
+- Form key validation (optional CSRF-like protection)
+- Tiered defense levels: `basic` (honeypot only), `standard` (+ time trap), `strict` (reserved for future rate limiting)
+
+**Mail Handling**
+- PRG pattern (Post-Redirect-Get) with 303 redirects
+- Admin notification emails with reference IDs
+- Automatic confirmation emails to submitters
+- Envelope sender configuration (`-f` flag) for SPF/DKIM alignment
+- Best-effort delivery with error logging
+
+**Validation**
+- Required field checks (name, email, message)
+- ASCII-only email validation with strict pattern matching
+- Character limits enforced (configurable via HTML attributes)
+- Subject line defaults to site name if not provided
+
+**User Experience**
+- Draft recovery via sessionStorage (survives validation errors)
+- Native browser validation with custom messages
+- Field-level error bubbles (no global banners)
+- Thank-you page with optional personalization
+- Accessible form structure with proper labels
+
+**Security Hardening**
+- Header sanitization (defense against email injection)
+- Timing-attack-safe form key comparison (`hash_equals`)
+- Error logging without exposing details to users
+- IP address logging (disclosed to users)
+
+### Technical Requirements
+- PHP 8.0 or higher
+- PHP `mail()` function configured and working
+- Mail server with DKIM/SPF recommended
+- Server-side mail sending limits strongly recommended (e.g., 50/day)
+
+### Known Limitations
+- Single form per page (form-agnostic support planned for 1.x)
+- No rate limiting at application level (relies on infrastructure)
+- No database/file logging (mail-only audit trail)
+- No AJAX submission mode
+- sessionStorage only (no cross-tab draft sharing)
+
+### File Structure
+```
+contactulus/
+├── contact.php          # Backend handler
+├── contactulus.js       # Frontend UI layer
+├── contact-form.html    # Example form markup
+├── thank-you.html       # Example thank-you page
+├── README.md            # Documentation
+├── CHANGELOG.md         # This file
+└── LICENSE              # License terms
+```
+
+### Configuration
+All user configuration is centralized in the `$CFG` array at the top of `contact.php`. No code changes required below the config block.
+
+### Upgrade Notes
+This is the first public release candidate. No upgrade path exists from earlier private versions.
+
+---
 
 ## [Unreleased]
-- Planned improvements: client-side error mapping, optional live counters, optional logging, optional form items.
----
-## [1.3.0] – 2025-10-22
 
-### Added
-- **Submitter receipt now includes a full copy** of the submitted message (subject, timestamp, fields, and body).
-- Copyright headers added to **PHP**, **JS**, and **HTML**.
+### Planned for 1.0
+- Finalized public documentation
+- Installation video/guide
+- Community feedback integration
 
-### Changed
-- **Self-contained distribution** under `/contactulus/` (no external service dependencies).
-- **Form action** now targets local handler: `https://www.conram.it/contactulus/contact.php`.
-- **Minimal PHP handler** (production build): POST-only, PRG 303 to `/thank-you.html`, honeypot, render-time trap, form key, basic validation.
-- **Deliverability hardened:** use `-f form-engine@conram.it` (envelope sender) on **both** admin and confirmation mails for SPF/DMARC alignment.
-- **Confirmation copy** reordered for clarity: header → summary → full message → footer.
-- **JS** keeps scoped, injected CSS within the component; removed thank-you page styling from JS.
-- Microcopy updates on form & thank-you pages (reply timeframe; privacy note).
-
-### Fixed
-- Missing final PRG redirect lines in `contact.php` (could block thank-you navigation).
-- Stray duplicate CSS template literal in `contactulus.js` (could break injection).
-- Minor attribute hygiene (`title`, placeholders, autocomplete/inputmode tweaks).
-
-### Deprecated
-- Hosted endpoint and asset at `https://service.conram.it/...` (replaced by local `/contactulus/`).
-- Thank-you personalization via `sessionStorage` remains in code but is **optional** and may be removed in a future major.
-
-### Docs
-- Suggested repo layout and minimal README guidance (install snippet, config keys, envelope-sender note).
-
-
-## [1.2.0] – 2025-10-08
-### Changed
-- Front-end assets consolidated into a single hosted file:
-  `https://service.conram.it/contactulus/contactulus.js`
-- Form and Thank-you pages now include one `<script>`; CSS is injected automatically.
-
-### Deprecated
-- `frontend/assets/js/contact-thanks.js` – replaced by the hosted script.
-  Will be removed in the next release.
-
-### Fixed
-- Wider, more resilient 2-column grid; clearer spacing.
-- F5/back-forward cache: form no longer repopulates on plain reload;
-  drafts only restore on `?err=…` bounce.
-
-### Docs
-- Added `docs/MIGRATION-1.2.md` with upgrade steps.
-
----
-## Name change to Contactulus
-### Why “Contactulus”?
-
-From Latin "contactus" (connection, touch) and the diminutive suffix -ulus, Contactulus means “a little contact.”
-It reflects the project’s goal: a small, efficient contact form that keeps communication simple and self-contained.
-
----
-## Conram Contact Form Engine — v1.1.4 - 7 october 2025
-### Highlights
-- Added client-side error management with friendly user feedback.
-- Introduced `contact.php` redirect handling (`thank-you.html` and `?err=` return paths).
-- Added submitter confirmation emails with reference IDs.
-- Integrated draft cache (prevents message loss during validation errors).
-- Refined input validation and honeypot logic.
-
-### Maintenance
-- Codebase synchronized across GitLab and GitHub.
-- Documentation refined (`FORM_FLOW.md`, `PREREQUISITES.md`, `CHANGELOG.md`).
-- Dual-license model clarified (GPLv3 + commercial option).
-
-### Tested
-- Verified mail delivery and auto-confirmation on PHP 8.2 shared hosting.
-- Verified front-end operation on Publii static sites.
----
-## [1.1.3] – 2025-10-02
-### Added
-- Automatic confirmation email sent to submitter upon successful delivery.
-  - Uses aligned From (`form-engine@conram.it`) for SPF/DMARC compliance.
-  - Includes polite acknowledgement, original subject, and reference ID.
-  - Adds headers (`Auto-Submitted`, `Precedence`, `X-Auto-Response-Suppress`) to prevent auto-reply loops.
-- Short **Reference ID** now generated server-side.
-  - Included in both admin and submitter mails.
-  - Exposed in JSON response (`ref`) for potential AJAX usage.
-
-### Changed
-- Admin notification subject line now includes `[REF]` for easier tracking.
-- Admin message body starts with `Reference: ...` for consistent traceability.
-
----
-## [1.1.2] – 2025-10-02
-### Added
-- Implemented **thank-you page redirect** in `contact.php` using the PRG pattern (303 redirect after POST).
-- Introduced **dual-mode responses**:
-  - **AJAX clients** receive JSON (`{ ok:true }`).
-  - **Normal browser form posts** redirect to `thank-you.html`.
-- Added **site_tag → thank-you URL whitelist mapping** to avoid open redirects.
-- Integrated **client-side ephemeral storage** (`sessionStorage`) to personalize the thank-you page with first name, subject, and a short reference ID.
-- Created `contact-thanks.js` helper for safe handling of thank-you data in Publii (linked via Theme Footer).
-
-### Changed
-- Moved `Content-Type: application/json` header logic to be conditional (only set when JSON is actually returned).
-- Honeypot branch now silently redirects to `thank-you.html` for normal form posts, instead of returning JSON only.
-
-### Notes
-- Thank-you personalization is **ephemeral**: no server-side storage. Data is cleared from the browser after rendering.
-- Page slug for thank-you is `thank-you.html` (adjust mapping if changed in the future).
-
----
-## [2025-09-30] Initial release
-- First public version of the Contact Form Engine.
-- Backend (`contact.php`) with validation, rate limiting, spam protection.
-- Debug endpoint (`contact-echo.php`) for testing integration.
-- Frontend snippet (`contact-form.html`) ready for static html capable sites or platforms.
-- Documentation: prerequisites, flow, and usage notes.
-
----
-## [1.1.0] - 2025-10-15
-### Changed
-- Planned JS live counters for fields with `data-count`.
-- Improved phone validation regex to support international formats.
-
-
-## [1.0.0] - 2025-09-30
-### Added
-- Initial release of the Conram Contact Form Engine.
-- Backend `contact.php` with:
-  - CORS restrictions (`conram.it` only).
-  - Honeypot, CSRF token, and render-time trap.
-  - Rate limiting (10 posts / 30 min / IP).
-  - Validation:
-    - Name & Subject: extended Latin allowed (å/ä/ö/ø/æ/é), emojis blocked.
-    - Email: validated with `FILTER_VALIDATE_EMAIL`.
-    - Phone: optional, allows digits + `+ - ( ) /`, 6–32 chars.
-    - Message: max 4000 chars, control chars stripped, emojis blocked.
-- Debug endpoint `contact-echo.php` for integration testing.
-- Frontend form snippet (`frontend/contact-form.html`) with:
-  - Responsive grid layout.
-  - Titles indicating max characters.
-  - Placeholders for usability.
-- Documentation:
-  - `README.md` (overview, usage, roadmap).
-  - `CHANGELOG.md` (this file).
-
----
-
-## Planned
-- Friendly client-side error message mapping.
-- Optional live character counters via external JS.
-- Message logging to file or database (for archival/audit).
-
-
-
-
-
-
-
-
-
+### Under Consideration for 1.x
+- Form-agnostic pattern matching (work with any form structure)
+- Optional rate limiting module (strict tier)
+- Database logging option
+- Multi-form support on single page
+- AJAX submission mode
+- Localization/i18n support
