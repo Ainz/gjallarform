@@ -68,8 +68,8 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 **Mail Server Setup (Critical)**
 Before deploying, configure your mail server:
-- **SPF records** for your domain ([what's SPF?](https://en.wikipedia.org/wiki/Sender_Policy_Framework))
-- **DKIM signing** enabled ([what's DKIM?](https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail))
+- **SPF records** for your domain (<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank" rel="noopener noreferrer">what's SPF?</a>)
+- **DKIM signing** enabled (<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" target="_blank" rel="noopener noreferrer">what's DKIM?</a>)
 - Configure a sending limit (recommended: 50 emails/day minimum)
 - Create a dedicated email address for form submissions (e.g., `form-engine@yourdomain.com`)
 
@@ -148,7 +148,7 @@ Choose your protection level based on your site's traffic and risk profile.
 ```
 
 **What you get:**
-- **Honeypot field** ([what's a honeypot?](https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions)) - A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent.
+- **Honeypot field** (<a href="https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions" target="_blank" rel="noopener noreferrer">what's a honeypot?</a>) - A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent.
 - Email validation
 - Required field checks
 
@@ -212,14 +212,14 @@ Understanding how Contactulus works helps with troubleshooting and customization
 
 4. **PHP Processing**
    - Honeypot check (silent success if triggered)
-   - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site ([CSRF protection](https://owasp.org/www-community/attacks/csrf))
+   - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site (<a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener noreferrer">CSRF protection</a>)
    - Time trap check (if standard/strict tier)
    - Field validation (presence, format, length)
    - Email composition (admin + confirmation)
    - Mail sending via PHP `mail()`
 
 5. **Redirect**
-   - **303 redirect to `thank-you.html`** - Uses the [Post/Redirect/Get pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
+   - **303 redirect to `thank-you.html`** - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
    - sessionStorage populated with submission details
    - JavaScript renders personalized thank-you message
 
@@ -417,7 +417,7 @@ If legitimate users are getting "too fast" errors:
 ✅ Fast form scrapers (time trap)  
 ✅ Email header injection (sanitization)  
 ✅ CSRF-style attacks (form key)  
-✅ Timing attacks on form key (constant-time comparison via [`hash_equals()`](https://www.php.net/manual/en/function.hash-equals.php))  
+✅ Timing attacks on form key (constant-time comparison via <a href="https://www.php.net/manual/en/function.hash-equals.php" target="_blank" rel="noopener noreferrer">`hash_equals()`</a>)  
 
 ### What It Doesn't Protect Against
 
