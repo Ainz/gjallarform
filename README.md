@@ -68,10 +68,12 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 **Mail Server Setup (Critical)**
 Before deploying, configure your mail server:
-- Set up SPF records for your domain
-- Enable DKIM signing
+- **SPF records** for your domain ([what's SPF?](https://en.wikipedia.org/wiki/Sender_Policy_Framework))
+- **DKIM signing** enabled ([what's DKIM?](https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail))
 - Configure a sending limit (recommended: 50 emails/day minimum)
 - Create a dedicated email address for form submissions (e.g., `form-engine@yourdomain.com`)
+
+> **SPF/DKIM in plain English:** These are email authentication methods that prove your server is allowed to send mail on behalf of your domain. Without them, Gmail and other providers will likely reject or spam-folder your form emails. Most hosting control panels have a section for configuring these under "Email" or "DNS" settings.
 
 **Why mail limits matter:** Even with bot protection, a determined attacker could spam your inbox. Server-side limits are your ultimate safety net.
 
@@ -146,7 +148,7 @@ Choose your protection level based on your site's traffic and risk profile.
 ```
 
 **What you get:**
-- Honeypot field (catches most bots)
+- **Honeypot field** ([what's a honeypot?](https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions)) - A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent.
 - Email validation
 - Required field checks
 
@@ -164,7 +166,7 @@ Choose your protection level based on your site's traffic and risk profile.
 ```
 
 **Adds to Basic:**
-- Time trap (requires 2+ seconds from page load to submit)
+- **Time trap** - Measures how long between page load and form submission. Requires at least 2 seconds (configurable), which catches bots that fill forms instantly but doesn't affect legitimate users who need time to type.
 - Gracefully degrades if JavaScript disabled
 
 **Best for:**
@@ -210,14 +212,14 @@ Understanding how Contactulus works helps with troubleshooting and customization
 
 4. **PHP Processing**
    - Honeypot check (silent success if triggered)
-   - Form key validation (if enabled)
+   - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site ([CSRF protection](https://owasp.org/www-community/attacks/csrf))
    - Time trap check (if standard/strict tier)
    - Field validation (presence, format, length)
    - Email composition (admin + confirmation)
    - Mail sending via PHP `mail()`
 
 5. **Redirect**
-   - 303 redirect to `thank-you.html` (PRG pattern)
+   - **303 redirect to `thank-you.html`** - Uses the [Post/Redirect/Get pattern](https://en.wikipedia.org/wiki/Post/Redirect/Get) (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
    - sessionStorage populated with submission details
    - JavaScript renders personalized thank-you message
 
@@ -415,7 +417,7 @@ If legitimate users are getting "too fast" errors:
 ✅ Fast form scrapers (time trap)  
 ✅ Email header injection (sanitization)  
 ✅ CSRF-style attacks (form key)  
-✅ Timing attacks on form key (constant-time comparison)  
+✅ Timing attacks on form key (constant-time comparison via [`hash_equals()`](https://www.php.net/manual/en/function.hash-equals.php))  
 
 ### What It Doesn't Protect Against
 
@@ -444,6 +446,38 @@ To disable IP logging, remove this line from `contact.php`:
 ```php
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 ```
+
+---
+
+## GDPR and Privacy Compliance
+
+Contactulus is designed for GDPR compliance when properly configured:
+
+**What Contactulus Does:**
+- ✅ Processes only data the user explicitly provides
+- ✅ Doesn't use cookies (sessionStorage is local-only, not transmitted)
+- ✅ Includes IP disclosure notice in example form
+- ✅ No third-party data sharing
+- ✅ No persistent storage (emails only)
+
+**Your Responsibilities:**
+1. Add a privacy policy explaining:
+   - What data you collect (name, email, message, IP)
+   - Why you collect it (to respond to inquiries)
+   - How long you keep it (recommend: delete after resolution)
+   - User rights (access, deletion requests)
+
+2. Consider adding consent checkboxes if required in your jurisdiction:
+   ```html
+   <label>
+     <input type="checkbox" name="consent" required>
+     I agree to the <a href="/privacy">privacy policy</a>
+   </label>
+   ```
+
+3. Honor deletion requests by removing emails from your inbox/archive
+
+**Note:** Contactulus doesn't log to database, so there's no persistent storage to manage beyond your email inbox.
 
 ---
 
