@@ -23,6 +23,7 @@
     // Minimal CSS (Publii-safe <style>)
     // ───────────────────────────────────────────────────────────────────────────
 var CSS = `
+.contactulus-wrapper{container-type:inline-size;container-name:cfwrapper}
 .contactulus-wrapper,.cf{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}    
 .cf{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
 .cf__span-2{grid-column:1 / -1}
@@ -32,7 +33,8 @@ var CSS = `
 .cf__actions{margin-top:.5rem}
 .cf button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
 .hp{position:absolute;left:-500vw;top:-500vh;height:0;width:0;overflow:hidden}
-@media (max-width:900px){.cf{grid-template-columns:1fr}}
+@media (max-width:768px){.cf{grid-template-columns:1fr}}
+@container cfwrapper (max-width:600px){.cf{grid-template-columns:1fr}}
 `;
     if (!document.getElementById('contactulus-style')) {
         var st = document.createElement('style');
