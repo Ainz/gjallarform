@@ -22,9 +22,9 @@
     // ───────────────────────────────────────────────────────────────────────────
     // Minimal CSS (Publii-safe <style>)
     // ───────────────────────────────────────────────────────────────────────────
-    var CSS = `
-.contactulus-wrapper,.cf{width:100%;max-width:72rem;margin-left:auto;margin-right:auto;box-sizing:border-box}
-.cf{display:grid;grid-template-columns:repeat(2,minmax(360px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
+var CSS = `
+.contactulus-wrapper,.cf{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}    
+.cf{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
 .cf__span-2{grid-column:1 / -1}
 .cf label{display:block;font-weight:700;margin-bottom:.4rem}
 .cf input,.cf textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
