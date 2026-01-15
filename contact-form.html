@@ -10,18 +10,18 @@
 <body>
 
   <main class="relmin-wrapper">
-    <form class="cf" action="/relmin/contact.php" method="post" novalidate>
+    <form class="relmin" action="/relmin/contact.php" method="post" novalidate>
       <label>Name <input type="text" name="fullname" required></label>
       <label>Email <input type="email" name="email" required></label>
       <label>Subject <input type="text" name="subject" required></label>
-      <label class="cf__span-2">Message <textarea name="message" required></textarea></label>
+      <label class="relmin__span-2">Message <textarea name="message" required></textarea></label>
 
       <!-- anti-abuse -->
       <input type="hidden" name="render_ts" value="">
       <input type="hidden" name="form_key" value="conram-871297">
       <input type="text" name="website" class="hp" autocomplete="off">
 
-      <div class="cf__actions cf__span-2">
+      <div class="relmin__actions relmin__span-2">
         <button type="submit">Send message</button>
       </div>
     </form>
