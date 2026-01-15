@@ -5,6 +5,21 @@ All notable changes to Relmin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.99.1] - 2026-01-15
+
+### Security
+- **CRITICAL**: Implemented timing-attack-safe form key comparison using `hash_equals()` instead of string comparison operator
+- **HIGH**: Prevented host header injection vulnerability by requiring explicit configuration and never trusting `$_SERVER['HTTP_HOST']`
+- **HIGH**: Added subject line sanitization to prevent email header injection attacks via newline characters
+- **MEDIUM**: Replaced hardcoded credentials with template placeholder values to prevent exposure in public repositories
+
+### Fixed
+- Removed duplicate `render_ts` POST variable read in validation logic
+- Updated outdated CSS class references in documentation (`.cf` → `.relmin`)
+
+### Changed
+- License headers updated from `Proprietary` to `GPL-3.0-or-later` in source files to match LICENSE file and README
+
 ## [0.99-RC] - 2025-11-15
 
 ### About This Release
