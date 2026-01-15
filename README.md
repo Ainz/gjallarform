@@ -116,7 +116,7 @@ $CFG = [
 **Update HTML Form**
 In `contact.html`, change the form action:
 ```html
-<form class="cf" action="https://www.yoursite.com/relmin/contact.php" method="POST">
+<form class="relmin" action="https://www.yoursite.com/relmin/contact.php" method="POST">
 ```
 
 Update the form key value to match your PHP config:
@@ -314,8 +314,8 @@ CSS is injected by `relmin.js`. To customize:
 
 **Option 1:** Override in your site's CSS
 ```css
-.cf input,
-.cf textarea {
+.relmin input,
+.relmin textarea {
   border-color: your-color;
   /* etc */
 }

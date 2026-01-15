@@ -6,7 +6,7 @@
  * - Rehydrate on ?err=…; reset on bfcache without ?err
  *
  * © 2025–present Conram.it. All rights reserved.
- * SPDX-License-Identifier: Proprietary
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 (function () {
