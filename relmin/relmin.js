@@ -23,18 +23,18 @@
     // Minimal CSS (Publii-safe <style>)
     // ───────────────────────────────────────────────────────────────────────────
 var CSS = `
-.relmin-wrapper{container-type:inline-size;container-name:cfwrapper}
-.relmin-wrapper,.cf{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}    
-.cf{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
-.cf__span-2{grid-column:1 / -1}
-.cf label{display:block;font-weight:700;margin-bottom:.4rem}
-.cf input,.cf textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
-.cf input:focus,.cf textarea:focus{outline:2px solid rgba(0,108,255,.2);border-color:#6aa3ff}
-.cf__actions{margin-top:.5rem}
-.cf button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
+.relmin-wrapper{container-type:inline-size;container-name:relminwrapper}
+.relmin-wrapper,.relmin{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.relmin{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
+.relmin__span-2{grid-column:1 / -1}
+.relmin label{display:block;font-weight:700;margin-bottom:.4rem}
+.relmin input,.relmin textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
+.relmin input:focus,.relmin textarea:focus{outline:2px solid rgba(0,108,255,.2);border-color:#6aa3ff}
+.relmin__actions{margin-top:.5rem}
+.relmin button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
 .hp{position:absolute;left:-500vw;top:-500vh;height:0;width:0;overflow:hidden}
-@media (max-width:768px){.cf{grid-template-columns:1fr}}
-@container cfwrapper (max-width:600px){.cf{grid-template-columns:1fr}}
+@media (max-width:768px){.relmin{grid-template-columns:1fr}}
+@container relminwrapper (max-width:600px){.relmin{grid-template-columns:1fr}}
 `;
     if (!document.getElementById('relmin-style')) {
         var st = document.createElement('style');
@@ -143,7 +143,7 @@ var CSS = `
     // On load + bfcache handling
     // ───────────────────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function () {
-        var form = $('form.cf');
+        var form = $('form.relmin');
         var hasErr = /[?&]err=/.test(location.search);
 
         if (form) {
@@ -165,7 +165,7 @@ var CSS = `
     });
 
     window.addEventListener('pageshow', function (e) {
-        var form = $('form.cf'); var hasErr = /[?&]err=/.test(location.search);
+        var form = $('form.relmin'); var hasErr = /[?&]err=/.test(location.search);
         if (form && e.persisted && !hasErr) { try { form.reset(); } catch (_) { } [K.draft, K.draftTs].forEach(Sdel); }
     });
 })();
