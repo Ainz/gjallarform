@@ -54,8 +54,8 @@ function compute_base_url(array $CFG): string {
 }
 $BASE_URL = compute_base_url($CFG);
 function base_url(): string      { global $BASE_URL; return $BASE_URL; }
-function thank_you_url(): string { return base_url() . '/thank-you.html'; }
-function back_url(): string      { return base_url() . '/contact-form.html'; }
+function thank_you_url(): string { return base_url() . '/thankyou.html'; }
+function back_url(): string      { return base_url() . '/contact.html'; }
 function back_with_err(string $code): void {
   $b = back_url();
   $sep = (strpos($b, '?') !== false) ? '&' : '?';
