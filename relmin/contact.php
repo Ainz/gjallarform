@@ -2,7 +2,7 @@
 /**
  * Relmin — minimal contact form handler (PRG + PHP sendmail)
  * © 2025–present Conram.it. All rights reserved.
- * SPDX-License-Identifier: Proprietary
+ * SPDX-License-Identifier: GPL-3.0-or-later
  * https://www.conram.it
  */
 declare(strict_types=1);
@@ -12,19 +12,19 @@ declare(strict_types=1);
 # ============================================================================
 $CFG = [
   // Mail routing / deliverability
-  'to'          => 'rikard.malmborg@conram.it', // Wger the mail ultimately gets send (required)
-  'from'        => 'form-engine@conram.it',     // Must be on your domain , can be a custom e-mail, but also the same as the "to" e-mail
-  'fromDisplay' => 'Conram.it contact form',    // Display name for From:
-  'replyDisplay'=> 'Conram.it',                 // Display name for Reply-To: (admin mailbox)
+  'to'          => 'admin@yoursite.tld',        // Where the mail ultimately gets sent (required)
+  'from'        => 'form-engine@yoursite.tld',  // Must be on your domain, can be a custom e-mail, but also the same as the "to" e-mail
+  'fromDisplay' => 'YourSite contact form',     // Display name for From:
+  'replyDisplay'=> 'YourSite',                  // Display name for Reply-To: (admin mailbox)
 
   // Branding / site
-  'siteName'    => 'Conram.it',                 // Used in subjects and labels
-  'siteUrl'     => 'https://www.conram.it',     // Leave '' to auto-detect (uses httpHost)
-  'httpHost'    => 'www.conram.it',             // Fallback host if siteUrl is blank
+  'siteName'    => 'YourSite',                  // Used in subjects and labels
+  'siteUrl'     => 'https://www.yoursite.tld',  // Leave '' to auto-detect (uses httpHost)
+  'httpHost'    => 'www.yoursite.tld',          // Fallback host if siteUrl is blank
 
   // Locale / anti-abuse
-  'timezone'    => 'Europe/Stockholm',          // Used for timestamps in receipts
-  'formKey'     => 'conram-871297',             // Must match hidden form field ('' disables)
+  'timezone'    => 'UTC',                       // Used for timestamps in receipts
+  'formKey'     => 'yoursite-random123',        // Must match hidden form field ('' disables)
   
   // Locale / anti-abuse by time limitations and submissions per time
 'timeTrapEnabled' => true,   // turn the time-trap on/off
@@ -49,8 +49,12 @@ function detect_scheme(): string {
 }
 function compute_base_url(array $CFG): string {
   if (!empty($CFG['siteUrl'])) return rtrim($CFG['siteUrl'], '/');
-  $host = $CFG['httpHost'] ?: ($_SERVER['HTTP_HOST'] ?? 'localhost');
-  return detect_scheme() . '://' . $host;
+  // Security: Never trust HTTP_HOST header - require explicit configuration
+  if (empty($CFG['httpHost'])) {
+    http_response_code(500);
+    exit('Configuration error: siteUrl or httpHost must be set');
+  }
+  return detect_scheme() . '://' . $CFG['httpHost'];
 }
 $BASE_URL = compute_base_url($CFG);
 function base_url(): string      { global $BASE_URL; return $BASE_URL; }
@@ -80,10 +84,9 @@ if ($website !== '') {
 }
 
 /** Optional CSRF-like shared secret */
-if (!empty($CFG['formKey']) && $key !== $CFG['formKey']) back_with_err('validation');
+if (!empty($CFG['formKey']) && !hash_equals($CFG['formKey'], $key)) back_with_err('validation');
 
 /** Render-time trap (basic bot throttle): require >= MinMs (CFG) */
-$rts = (int)($_POST['render_ts'] ?? 0);
 if (!empty($CFG['timeTrapEnabled']) && $rts > 0) {
   // Accept both ms and s inputs; convert seconds to ms if it "looks" short.
   if ($rts < 1_000_000_000_000) { // < ~2001-09-09 in ms → treat as seconds
@@ -109,8 +112,10 @@ if (substr_count($email, '@') !== 1)                     back_with_err('email_in
 if (!preg_match('/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/', $email))
   back_with_err('email_invalid');
 
-/** Subject default */
+/** Subject default & sanitization */
 if ($subject === '') $subject = $CFG['siteName'] . ' Contact';
+// Security: Strip newlines to prevent email header injection
+$subject = preg_replace('/[\r\n]+/', ' ', $subject);
 
 /** Compose */
 $tz   = new DateTimeZone($CFG['timezone'] ?: 'UTC');
