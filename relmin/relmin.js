@@ -64,7 +64,7 @@ var CSS = `
         Sset(K.tyRef, (payload.ref && String(payload.ref).trim()) || makeRef());
     };
     window.Relmin.renderThankYou = function () {
-        var box = $('#ccfe-ty-details'), n = $('#ccfe-ty-name'), s = $('#ccfe-ty-subject'), r = $('#ccfe-ty-ref');
+        var box = $('#relmin-thankyou-details'), n = $('#relmin-thankyou-name'), s = $('#relmin-thankyou-subject'), r = $('#relmin-thankyou-ref');
         var name = Sget(K.tyName), subj = Sget(K.tySubject), ref = Sget(K.tyRef);
         if (box && (name || subj || ref)) {
             if (n) n.textContent = name || '—'; if (s) s.textContent = subj || '—'; if (r) r.textContent = ref || '—';
@@ -159,7 +159,7 @@ var CSS = `
             if (hasErr) rehydrate(form); else[K.draft, K.draftTs].forEach(Sdel);
         }
 
-        if (document.getElementById('ccfe-ty-root')) {
+        if (document.getElementById('relmin-thankyou-root')) {
             window.Relmin.renderThankYou();
         }
     });
