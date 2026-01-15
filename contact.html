@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Contact</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+  <main class="relmin-wrapper">
+    <form class="relmin" action="/relmin/contact.php" method="post" novalidate>
+      <label>Name <input type="text" name="fullname" required></label>
+      <label>Email <input type="email" name="email" required></label>
+      <label>Subject <input type="text" name="subject" required></label>
+      <label class="relmin__span-2">Message <textarea name="message" required></textarea></label>
+
+      <!-- anti-abuse -->
+      <input type="hidden" name="render_ts" value="">
+      <input type="hidden" name="form_key" value="conram-871297">
+      <input type="text" name="website" class="hp" autocomplete="off">
+
+      <div class="relmin__actions relmin__span-2">
+        <button type="submit">Send message</button>
+      </div>
+    </form>
+  </main>
+
+  <script src="/relmin/relmin.js" defer></script>
+</body>
+</html>
