@@ -61,9 +61,9 @@ Release Candidate for Relmin 1.0. Core functionality is stable and tested. Suita
 ```
 relmin/
 ├── contact.php          # Backend handler
-├── relmin.js       # Frontend UI layer
-├── contact-form.html    # Example form markup
-├── thank-you.html       # Example thank-you page
+├── relmin.js            # Frontend UI layer
+├── contact.html         # Example form markup
+├── thankyou.html        # Example thank-you page
 ├── README.md            # Documentation
 ├── CHANGELOG.md         # This file
 └── LICENSE              # License terms
