@@ -131,8 +131,8 @@ Update the form key value to match your PHP config:
 
 ### 3. Test It
 
-1. Submit the form with valid data → should redirect to thank-you page
-2. Fill the hidden "website" field → should redirect to thank-you (no email sent)
+1. Submit the form with valid data → should redirect to thankyou.html page
+2. Fill the hidden "website" field → should redirect to thankyou.html (no email sent)
 3. Submit too quickly → should bounce back with error (if time trap enabled)
 4. Check your inbox for both admin notification and confirmation copy
 
@@ -219,7 +219,7 @@ Understanding how Relmin works helps with troubleshooting and customization.
    - Mail sending via PHP `mail()`
 
 5. **Redirect**
-   - **303 redirect to `thank-you.html`** - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
+   - **303 redirect to `thankyou.html`** - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
    - sessionStorage populated with submission details
    - JavaScript renders personalized thank-you message
 
@@ -404,7 +404,7 @@ If legitimate users are getting "too fast" errors:
 ### Form Redirects to Wrong Page
 
 1. Verify `$CFG['siteUrl']` is set correctly
-2. Check that `thank-you.html` exists at root
+2. Check that `thankyou.html` exists at root
 3. Check `.htaccess` rules (if using Apache)
 
 ---
