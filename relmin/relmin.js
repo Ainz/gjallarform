@@ -1,5 +1,5 @@
 /*!
- * Contactulus UI helper (lean + field bubbles)
+ * Relmin UI helper (lean + field bubbles)
  * - Native validation bubbles only (no global banner)
  * - Email customValidity helper (friendly messages)
  * - Draft cache + TY page data via sessionStorage
@@ -23,8 +23,8 @@
     // Minimal CSS (Publii-safe <style>)
     // ───────────────────────────────────────────────────────────────────────────
 var CSS = `
-.contactulus-wrapper{container-type:inline-size;container-name:cfwrapper}
-.contactulus-wrapper,.cf{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}    
+.relmin-wrapper{container-type:inline-size;container-name:cfwrapper}
+.relmin-wrapper,.cf{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}    
 .cf{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
 .cf__span-2{grid-column:1 / -1}
 .cf label{display:block;font-weight:700;margin-bottom:.4rem}
@@ -36,9 +36,9 @@ var CSS = `
 @media (max-width:768px){.cf{grid-template-columns:1fr}}
 @container cfwrapper (max-width:600px){.cf{grid-template-columns:1fr}}
 `;
-    if (!document.getElementById('contactulus-style')) {
+    if (!document.getElementById('relmin-style')) {
         var st = document.createElement('style');
-        st.id = 'contactulus-style';
+        st.id = 'relmin-style';
         st.textContent = CSS;
         document.head.appendChild(st);
     }
@@ -57,13 +57,13 @@ var CSS = `
     // ───────────────────────────────────────────────────────────────────────────
     // TY data API
     // ───────────────────────────────────────────────────────────────────────────
-    window.Contactulus = window.Contactulus || {};
-    window.Contactulus.setThankYou = function (payload) {
+    window.Relmin = window.Relmin || {};
+    window.Relmin.setThankYou = function (payload) {
         Sset(K.tyName, firstWord(payload.name || ''));
         Sset(K.tySubject, String(payload.subject || '').slice(0, 120));
         Sset(K.tyRef, (payload.ref && String(payload.ref).trim()) || makeRef());
     };
-    window.Contactulus.renderThankYou = function () {
+    window.Relmin.renderThankYou = function () {
         var box = $('#ccfe-ty-details'), n = $('#ccfe-ty-name'), s = $('#ccfe-ty-subject'), r = $('#ccfe-ty-ref');
         var name = Sget(K.tyName), subj = Sget(K.tySubject), ref = Sget(K.tyRef);
         if (box && (name || subj || ref)) {
@@ -136,7 +136,7 @@ var CSS = `
 
         var fullname = (f.querySelector('[name="fullname"]') || {}).value || '';
         var subject = (f.querySelector('[name="subject"]') || {}).value || '';
-        window.Contactulus.setThankYou({ name: fullname, subject });
+        window.Relmin.setThankYou({ name: fullname, subject });
     }, true);
 
     // ───────────────────────────────────────────────────────────────────────────
@@ -160,7 +160,7 @@ var CSS = `
         }
 
         if (document.getElementById('ccfe-ty-root')) {
-            window.Contactulus.renderThankYou();
+            window.Relmin.renderThankYou();
         }
     });
 

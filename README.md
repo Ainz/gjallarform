@@ -1,10 +1,10 @@
 <img width="800" height="" alt="image" src="https://github.com/user-attachments/assets/39001114-08cf-4540-9fb6-705be251a8d2" />
 
-# Contactulus
+# Relmin
 
 **A minimal, secure contact form for PHP shared hosting**
 
-Contactulus is a self-contained contact form solution designed for simplicity, security, and ease of deployment. No dependencies, no frameworks, no database—just PHP's native `mail()` function and clean defensive coding.
+Relmin is a self-contained contact form solution designed for simplicity, security, and ease of deployment. No dependencies, no frameworks, no database—just PHP's native `mail()` function and clean defensive coding.
 
 Perfect for personal sites, portfolios, and small business pages running on shared hosting.
 
@@ -12,7 +12,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 ## Table of Contents
 
-- [Why Contactulus?](#why-contactulus)
+- [Why Relmin?](#why-relmin)
 - [Quick Start](#quick-start)
   - [Prerequisites](#1-prerequisites)
   - [Installation](#2-installation)
@@ -34,7 +34,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 ---
 
-## Why Contactulus?
+## Why Relmin?
 
 **Built for Real Constraints**
 - Works on basic shared hosting (no special PHP extensions)
@@ -82,9 +82,9 @@ Before deploying, configure your mail server:
 **Upload Files**
 ```
 your-site/
-├── contactulus/
+├── relmin/
 │   ├── contact.php
-│   └── contactulus.js
+│   └── relmin.js
 ├── contact-form.html
 └── thank-you.html
 ```
@@ -116,7 +116,7 @@ $CFG = [
 **Update HTML Form**
 In `contact-form.html`, change the form action:
 ```html
-<form class="cf" action="https://www.yoursite.com/contactulus/contact.php" method="POST">
+<form class="cf" action="https://www.yoursite.com/relmin/contact.php" method="POST">
 ```
 
 Update the form key value to match your PHP config:
@@ -126,7 +126,7 @@ Update the form key value to match your PHP config:
 
 **Link the JavaScript**
 ```html
-<script src="https://www.yoursite.com/contactulus/contactulus.js" defer></script>
+<script src="https://www.yoursite.com/relmin/relmin.js" defer></script>
 ```
 
 ### 3. Test It
@@ -191,7 +191,7 @@ Choose your protection level based on your site's traffic and risk profile.
 
 ## Form Flow
 
-Understanding how Contactulus works helps with troubleshooting and customization.
+Understanding how Relmin works helps with troubleshooting and customization.
 
 ### User Journey (Success Path)
 
@@ -310,7 +310,7 @@ You'll need to modify:
 
 ### Styling
 
-CSS is injected by `contactulus.js`. To customize:
+CSS is injected by `relmin.js`. To customize:
 
 **Option 1:** Override in your site's CSS
 ```css
@@ -321,7 +321,7 @@ CSS is injected by `contactulus.js`. To customize:
 }
 ```
 
-**Option 2:** Modify the CSS string in `contactulus.js`
+**Option 2:** Modify the CSS string in `relmin.js`
 ```javascript
 var CSS = `
   /* Your custom styles here */
@@ -342,7 +342,7 @@ Current codes:
 - `email_invalid` - Email format invalid
 - `send_failed` - Mail delivery failed
 
-Custom error handling in JavaScript (see `hasErrCode()` function in `contactulus.js`).
+Custom error handling in JavaScript (see `hasErrCode()` function in `relmin.js`).
 
 ---
 
@@ -411,7 +411,7 @@ If legitimate users are getting "too fast" errors:
 
 ## Security Notes
 
-### What Contactulus Protects Against
+### What Relmin Protects Against
 
 ✅ Most automated bots (honeypot)  
 ✅ Fast form scrapers (time trap)  
@@ -437,7 +437,7 @@ If legitimate users are getting "too fast" errors:
 
 ### Privacy Considerations
 
-Contactulus logs IP addresses by default. Ensure you:
+Relmin logs IP addresses by default. Ensure you:
 - Disclose this in your form (✅ already done in example HTML)
 - Comply with GDPR/privacy laws in your jurisdiction
 - Have a privacy policy that mentions form submissions
@@ -451,9 +451,9 @@ $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
 ## GDPR and Privacy Compliance
 
-Contactulus is designed for GDPR compliance when properly configured:
+Relmin is designed for GDPR compliance when properly configured:
 
-**What Contactulus Does:**
+**What Relmin Does:**
 - ✅ Processes only data the user explicitly provides
 - ✅ Doesn't use cookies (sessionStorage is local-only, not transmitted)
 - ✅ Includes IP disclosure notice in example form
@@ -477,7 +477,7 @@ Contactulus is designed for GDPR compliance when properly configured:
 
 3. Honor deletion requests by removing emails from your inbox/archive
 
-**Note:** Contactulus doesn't log to database, so there's no persistent storage to manage beyond your email inbox.
+**Note:** Relmin doesn't log to database, so there's no persistent storage to manage beyond your email inbox.
 
 ---
 
@@ -503,7 +503,7 @@ Before going live:
 
 ## License
 
-Contactulus is free software licensed under the GNU General Public License v3.0 or later.
+Relmin is free software licensed under the GNU General Public License v3.0 or later.
 
 © 2025–present Conram.it  
 SPDX-License-Identifier: GPL-3.0-or-later
@@ -511,7 +511,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 See [LICENSE](LICENSE) file for full terms.
 
 You are free to:
-- Use Contactulus for any purpose
+- Use Relmin for any purpose
 - Study and modify the source code
 - Distribute original or modified versions
 
