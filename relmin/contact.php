@@ -1,6 +1,6 @@
 <?php
 /**
- * Contactulus — minimal contact form handler (PRG + PHP sendmail)
+ * Relmin — minimal contact form handler (PRG + PHP sendmail)
  * © 2025–present Conram.it. All rights reserved.
  * SPDX-License-Identifier: Proprietary
  * https://www.conram.it

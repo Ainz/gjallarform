@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Contactulus will be documented in this file.
+All notable changes to Relmin will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.99-RC] - 2025-11-15
 
 ### About This Release
-Release Candidate for Contactulus 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
+Release Candidate for Relmin 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
 
 ### Core Features
 
@@ -59,9 +59,9 @@ Release Candidate for Contactulus 1.0. Core functionality is stable and tested. 
 
 ### File Structure
 ```
-contactulus/
+relmin/
 ├── contact.php          # Backend handler
-├── contactulus.js       # Frontend UI layer
+├── relmin.js       # Frontend UI layer
 ├── contact-form.html    # Example form markup
 ├── thank-you.html       # Example thank-you page
 ├── README.md            # Documentation
