@@ -85,8 +85,8 @@ your-site/
 ├── relmin/
 │   ├── contact.php
 │   └── relmin.js
-├── contact-form.html
-└── thank-you.html
+├── contact.html
+└── thankyou.html
 ```
 
 **Configure contact.php**
@@ -114,7 +114,7 @@ $CFG = [
 ```
 
 **Update HTML Form**
-In `contact-form.html`, change the form action:
+In `contact.html`, change the form action:
 ```html
 <form class="cf" action="https://www.yoursite.com/relmin/contact.php" method="POST">
 ```
