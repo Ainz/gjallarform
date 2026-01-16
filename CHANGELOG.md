@@ -5,6 +5,17 @@ All notable changes to Relmin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Configurable page filenames via `$CFG['contactPage']` and `$CFG['thankYouPage']`
+- Support for custom filenames and subdirectory paths (e.g., `forms/contact.html`)
+- Comprehensive inline documentation (PHPDoc and JSDoc) for all functions
+- Detailed explanatory comments throughout codebase for improved maintainability
+
+### Fixed
+- File encoding issue with Unicode box-drawing characters in comments replaced with ASCII hyphens
+
 ## [0.99.1] - 2026-01-15
 
 ### Security
