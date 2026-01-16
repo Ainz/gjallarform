@@ -43,10 +43,35 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 }
 
 /** Base URL helpers (thank-you + back URLs derived from config) */
+
+/**
+ * Detects the HTTP scheme (http or https) for the current request.
+ *
+ * Checks if HTTPS is enabled via the $_SERVER['HTTPS'] variable. If HTTPS is
+ * detected and not 'off', returns 'https'. Otherwise, defaults to 'https' as
+ * the safest option for public-facing forms to avoid mixed-content warnings.
+ *
+ * @return string Either 'https' (always https for maximum security)
+ */
 function detect_scheme(): string {
   if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') return 'https';
   return 'https'; // safest public default
 }
+/**
+ * Computes the base URL for the site from configuration.
+ *
+ * Attempts to construct the site's base URL using the following priority:
+ * 1. Uses $CFG['siteUrl'] if explicitly set (most secure)
+ * 2. Falls back to $CFG['httpHost'] with detected scheme
+ *
+ * Security note: This function deliberately does NOT use $_SERVER['HTTP_HOST']
+ * to prevent host header injection attacks. Either siteUrl or httpHost must
+ * be explicitly configured in $CFG.
+ *
+ * @param array $CFG Configuration array containing siteUrl and httpHost
+ * @return string The base URL without trailing slash (e.g., 'https://example.com')
+ * @throws void Exits with HTTP 500 if neither siteUrl nor httpHost is configured
+ */
 function compute_base_url(array $CFG): string {
   if (!empty($CFG['siteUrl'])) return rtrim($CFG['siteUrl'], '/');
   // Security: Never trust HTTP_HOST header - require explicit configuration
@@ -57,9 +82,53 @@ function compute_base_url(array $CFG): string {
   return detect_scheme() . '://' . $CFG['httpHost'];
 }
 $BASE_URL = compute_base_url($CFG);
+
+/**
+ * Returns the computed base URL for the site.
+ *
+ * This is a convenience wrapper around the global $BASE_URL variable which
+ * is computed once during script initialization. Avoids re-computation on
+ * every call.
+ *
+ * @return string The base URL (e.g., 'https://example.com')
+ */
 function base_url(): string      { global $BASE_URL; return $BASE_URL; }
+
+/**
+ * Returns the full URL to the thank you page.
+ *
+ * Used for redirecting after successful form submission. Points to the
+ * static thankyou.html page where users see confirmation and submission
+ * details rendered by JavaScript.
+ *
+ * @return string Full URL to thankyou.html (e.g., 'https://example.com/thankyou.html')
+ */
 function thank_you_url(): string { return base_url() . '/thankyou.html'; }
+
+/**
+ * Returns the full URL to the contact form page.
+ *
+ * Used for redirecting back to the form when validation fails or errors occur.
+ * Points to the static contact.html page.
+ *
+ * @return string Full URL to contact.html (e.g., 'https://example.com/contact.html')
+ */
 function back_url(): string      { return base_url() . '/contact.html'; }
+/**
+ * Redirects back to the contact form with an error code in the query string.
+ *
+ * Performs a POST-Redirect-GET (PRG) pattern redirect to the contact form,
+ * appending an error code parameter that JavaScript can detect to:
+ * - Display appropriate error messages to the user
+ * - Restore draft form data from sessionStorage
+ * - Focus the problematic field
+ *
+ * Uses HTTP 303 (See Other) status code to ensure the browser makes a GET
+ * request, preventing form resubmission on page refresh.
+ *
+ * @param string $code Error code to pass (e.g., 'email_invalid', 'too_fast', 'name_missing')
+ * @return void Exits script execution after sending redirect header
+ */
 function back_with_err(string $code): void {
   $b = back_url();
   $sep = (strpos($b, '?') !== false) ? '&' : '?';
