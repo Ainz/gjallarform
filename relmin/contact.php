@@ -21,6 +21,8 @@ $CFG = [
   'siteName'    => 'YourSite',                  // Used in subjects and labels
   'siteUrl'     => 'https://www.yoursite.tld',  // Leave '' to auto-detect (uses httpHost)
   'httpHost'    => 'www.yoursite.tld',          // Fallback host if siteUrl is blank
+  'contactPage' => 'contact.html',              // Contact form page filename (can include path like 'forms/contact.html')
+  'thankYouPage'=> 'thankyou.html',             // Thank you page filename (can include path like 'forms/thankyou.html')
 
   // Locale / anti-abuse
   'timezone'    => 'UTC',                       // Used for timestamps in receipts
@@ -98,22 +100,36 @@ function base_url(): string      { global $BASE_URL; return $BASE_URL; }
  * Returns the full URL to the thank you page.
  *
  * Used for redirecting after successful form submission. Points to the
- * static thankyou.html page where users see confirmation and submission
+ * configured thank you page where users see confirmation and submission
  * details rendered by JavaScript.
  *
- * @return string Full URL to thankyou.html (e.g., 'https://example.com/thankyou.html')
+ * The page filename is configurable via $CFG['thankYouPage'], allowing
+ * users to customize the filename or path without modifying code.
+ *
+ * @return string Full URL to thank you page (e.g., 'https://example.com/thankyou.html')
  */
-function thank_you_url(): string { return base_url() . '/thankyou.html'; }
+function thank_you_url(): string {
+  global $CFG;
+  $page = $CFG['thankYouPage'] ?? 'thankyou.html';
+  return base_url() . '/' . ltrim($page, '/');
+}
 
 /**
  * Returns the full URL to the contact form page.
  *
  * Used for redirecting back to the form when validation fails or errors occur.
- * Points to the static contact.html page.
+ * Points to the configured contact form page.
  *
- * @return string Full URL to contact.html (e.g., 'https://example.com/contact.html')
+ * The page filename is configurable via $CFG['contactPage'], allowing
+ * users to customize the filename or path without modifying code.
+ *
+ * @return string Full URL to contact page (e.g., 'https://example.com/contact.html')
  */
-function back_url(): string      { return base_url() . '/contact.html'; }
+function back_url(): string      {
+  global $CFG;
+  $page = $CFG['contactPage'] ?? 'contact.html';
+  return base_url() . '/' . ltrim($page, '/');
+}
 /**
  * Redirects back to the contact form with an error code in the query string.
  *

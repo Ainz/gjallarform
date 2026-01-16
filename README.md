@@ -99,12 +99,14 @@ $CFG = [
   'from'        => 'form-engine@yourdomain.com', // MUST be on your domain
   'fromDisplay' => 'Your Site Contact Form',
   'replyDisplay'=> 'Your Site',
-  
+
   // Site details
-  'siteName'    => 'Your Site',
-  'siteUrl'     => 'https://www.yoursite.com',
-  'timezone'    => 'America/New_York',
-  
+  'siteName'     => 'Your Site',
+  'siteUrl'      => 'https://www.yoursite.com',
+  'contactPage'  => 'contact.html',    // Customizable contact form filename
+  'thankYouPage' => 'thankyou.html',   // Customizable thank you page filename
+  'timezone'     => 'America/New_York',
+
   // Defense level
   'defenseLevel'    => 'standard',  // 'basic', 'standard', or 'strict'
   'formKey'         => 'yoursite-' . rand(100000, 999999),
@@ -262,6 +264,8 @@ Understanding how Relmin works helps with troubleshooting and customization.
 | Setting | Default | Purpose |
 |---------|---------|---------|
 | `siteUrl` | Auto-detected | Base URL for redirects |
+| `contactPage` | `contact.html` | Contact form page filename/path |
+| `thankYouPage` | `thankyou.html` | Thank you page filename/path |
 | `timezone` | `UTC` | Timezone for timestamps |
 | `formKey` | `''` (disabled) | CSRF-like token |
 | `defenseLevel` | `standard` | `basic`/`standard`/`strict` |
@@ -307,6 +311,26 @@ You'll need to modify:
 **Removing Fields:**
 - `subject` can be removed (will default to site name)
 - Don't remove `fullname`, `email`, or `message` without adjusting validation
+
+### Page Filenames
+
+By default, Relmin expects `contact.html` and `thankyou.html` at your site root. You can customize these filenames or use subdirectories by editing the `$CFG` array:
+
+```php
+$CFG = [
+  // ...
+  'contactPage'  => 'forms/contact.html',    // Use subdirectory
+  'thankYouPage' => 'forms/success.html',    // Custom filename
+  // ...
+];
+```
+
+**Examples:**
+- `'contact.html'` → redirects to `https://yoursite.com/contact.html`
+- `'forms/contact.html'` → redirects to `https://yoursite.com/forms/contact.html`
+- `'get-in-touch.html'` → redirects to `https://yoursite.com/get-in-touch.html`
+
+The leading slash is handled automatically, so you can use either `contact.html` or `/contact.html`.
 
 ### Styling
 
