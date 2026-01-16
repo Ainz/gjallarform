@@ -10,18 +10,18 @@
  */
 
 (function () {
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // Small helpers
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     function $(sel, root) { return (root || document).querySelector(sel); }
     function qsAll(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
     function firstWord(s) { var t = String(s || '').trim(); return t ? t.split(/\s+/)[0].slice(0, 60) : ''; }
     function makeRef() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
     function hasErrCode(code) { return new RegExp('[?&]err=' + code + '(?:&|$)').test(location.search); }
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // Minimal CSS (Publii-safe <style>)
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
 var CSS = `
 .relmin-wrapper{container-type:inline-size;container-name:relminwrapper}
 .relmin-wrapper,.relmin{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
@@ -43,9 +43,9 @@ var CSS = `
         document.head.appendChild(st);
     }
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // sessionStorage keys + helpers
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     var NS = 'ctls_';
     var K = { tyName: NS + 'ty_name', tySubject: NS + 'ty_subject', tyRef: NS + 'ty_ref', draft: NS + 'draft', draftTs: NS + 'draft_ts' };
     var TTL = 30 * 60 * 1000;
@@ -54,9 +54,9 @@ var CSS = `
     function Sget(k) { try { return sessionStorage.getItem(k) || ''; } catch (_) { return '' } }
     function Sdel(k) { try { sessionStorage.removeItem(k); } catch (_) { } }
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // TY data API
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     window.Relmin = window.Relmin || {};
     window.Relmin.setThankYou = function (payload) {
         Sset(K.tyName, firstWord(payload.name || ''));
@@ -73,9 +73,9 @@ var CSS = `
         [K.tyName, K.tySubject, K.tyRef, K.draft, K.draftTs].forEach(Sdel);
     };
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // Draft capture / rehydrate (only on ?err=…)
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     function snapshotForm(form) {
         var get = function (n) { var el = form.querySelector('[name="' + n + '"]'); return el ? el.value : '' };
         var p = { fullname: get('fullname'), email: get('email'), subject: get('subject'), message: get('message') };
@@ -90,9 +90,9 @@ var CSS = `
         } catch (_) { }
     }
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // Field-level helpers (native bubbles via setCustomValidity)
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     function attachEmailAsciiGuard(input) {
         if (!input) return;
         function checkEmailAscii() {
@@ -112,9 +112,9 @@ var CSS = `
         }
     }
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // Submit: snapshot draft, rely on native validity, stash TY data when OK
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     document.addEventListener('submit', function (ev) {
         var f = ev.target;
         if (!(f instanceof HTMLFormElement)) return;
@@ -139,9 +139,9 @@ var CSS = `
         window.Relmin.setThankYou({ name: fullname, subject });
     }, true);
 
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     // On load + bfcache handling
-    // ───────────────────────────────────────────────────────────────────────────
+    // ---------------------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', function () {
         var form = $('form.relmin');
         var hasErr = /[?&]err=/.test(location.search);
