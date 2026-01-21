@@ -5,8 +5,6 @@ All notable changes to Relmin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## ## [0.99.2] - 2026-01-21
-
 ## [0.92] - 2026-01-21
 
 ### About This Release
@@ -136,4 +134,5 @@ This is the first public release candidate. No upgrade path exists from earlier 
 - Multi-form support on single page
 - AJAX submission mode
 - Localization/i18n support
+
 
