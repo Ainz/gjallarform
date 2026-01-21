@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.92] - 2026-01-21
+
+### About This Release
+Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds math challenge spam defense as a Standard tier protection feature, along with improved documentation and configuration flexibility.
+
 ### Added
 - **Math challenge spam defense** - Simple arithmetic questions as Standard tier protection
   - 7 rotating math questions (addition, subtraction, multiplication, division)
@@ -24,7 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - File encoding issue with Unicode box-drawing characters in comments replaced with ASCII hyphens
 
-## [0.99.1] - 2026-01-15
+### Changed
+- **Versioning scheme simplified** from 0.99.x to 0.9x series (0.99.1 → 0.91, future 0.99.2 → 0.92, etc.)
+- This change makes version numbers easier to read and maintain while maintaining semantic versioning principles
+
+## [0.91] - 2026-01-15
+(Previously released as 0.99.1)
 
 ### Security
 - **CRITICAL**: Implemented timing-attack-safe form key comparison using `hash_equals()` instead of string comparison operator
@@ -39,7 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - License headers updated from `Proprietary` to `GPL-3.0-or-later` in source files to match LICENSE file and README
 
-## [0.99-RC] - 2025-11-15
+## [0.90-RC] - 2025-11-15
+(Previously released as 0.99-RC)
 
 ### About This Release
 Release Candidate for Relmin 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
