@@ -5,6 +5,8 @@ All notable changes to Relmin will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
 ## [0.92] - 2026-01-21
 
 ### About This Release
@@ -19,12 +21,9 @@ Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds 
   - Configurable via `$CFG['math_challenge']` (enabled by default in Standard tier)
   - New error codes: `math_wrong` (incorrect answer), `math_invalid` (invalid format)
   - Draft save/restore includes math answer for seamless error recovery
-- Configurable page filenames via `$CFG['contactPage']` and `$CFG['thankYouPage']`
-- Support for custom filenames and subdirectory paths (e.g., `forms/contact.html`)
-- Comprehensive inline documentation (PHPDoc and JSDoc) for all functions
-- Detailed explanatory comments throughout codebase for improved maintainability
 
 ### Fixed
+- Removed hardcoded page filename defaults from URL helper functions (`thank_you_url()` and `back_url()`)
 - File encoding issue with Unicode box-drawing characters in comments replaced with ASCII hyphens
 
 ### Changed
@@ -33,6 +32,12 @@ Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds 
 
 ## [0.91] - 2026-01-15
 (Previously released as 0.99.1)
+
+### Added
+- Configurable page filenames via `$CFG['contactPage']` and `$CFG['thankYouPage']`
+- Support for custom filenames and subdirectory paths (e.g., `forms/contact.html`)
+- Comprehensive inline documentation (PHPDoc and JSDoc) for all functions
+- Detailed explanatory comments throughout codebase for improved maintainability
 
 ### Security
 - **CRITICAL**: Implemented timing-attack-safe form key comparison using `hash_equals()` instead of string comparison operator
@@ -134,5 +139,3 @@ This is the first public release candidate. No upgrade path exists from earlier 
 - Multi-form support on single page
 - AJAX submission mode
 - Localization/i18n support
-
-

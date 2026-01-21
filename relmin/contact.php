@@ -113,7 +113,7 @@ function base_url(): string      { global $BASE_URL; return $BASE_URL; }
  */
 function thank_you_url(): string {
   global $CFG;
-  $page = $CFG['thankYouPage'] ?? 'thankyou.html';
+  $page = $CFG['thankYouPage'];
   return base_url() . '/' . ltrim($page, '/');
 }
 
@@ -130,7 +130,7 @@ function thank_you_url(): string {
  */
 function back_url(): string      {
   global $CFG;
-  $page = $CFG['contactPage'] ?? 'contact.html';
+  $page = $CFG['contactPage'];
   return base_url() . '/' . ltrim($page, '/');
 }
 /**
