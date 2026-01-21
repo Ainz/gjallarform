@@ -191,7 +191,7 @@ Choose your protection level based on your site's traffic and risk profile.
 - Rate limiting by IP address
 - Requires file/cache storage
 
-**Status:** Planned for version 1.x. Not implemented in 0.99 RC.
+**Status:** Planned for version 1.x. Not implemented in 0.90-RC.
 
 ---
 
