@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Math challenge spam defense** - Simple arithmetic questions as Standard tier protection
+  - 7 rotating math questions (addition, subtraction, multiplication, division)
+  - Deterministic question selection based on form key using CRC32 hash
+  - Client-side and server-side validation for math answers
+  - Stops manual spam operators while remaining trivial for legitimate users
+  - Configurable via `$CFG['math_challenge']` (enabled by default in Standard tier)
+  - New error codes: `math_wrong` (incorrect answer), `math_invalid` (invalid format)
+  - Draft save/restore includes math answer for seamless error recovery
 - Configurable page filenames via `$CFG['contactPage']` and `$CFG['thankYouPage']`
 - Support for custom filenames and subdirectory paths (e.g., `forms/contact.html`)
 - Comprehensive inline documentation (PHPDoc and JSDoc) for all functions
