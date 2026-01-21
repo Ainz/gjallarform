@@ -46,6 +46,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - Tiered defense system (choose your protection level)
 - Honeypot bot filtering (primary defense)
 - Optional time trap for automated submissions
+- Optional math challenge for manual spam operators
 - Email header injection protection
 - Graceful degradation for edge cases
 
@@ -112,6 +113,7 @@ $CFG = [
   'formKey'         => 'yoursite-' . rand(100000, 999999),
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
+  'math_challenge'  => true,        // Enable simple math verification question
 ];
 ```
 
@@ -169,14 +171,16 @@ Choose your protection level based on your site's traffic and risk profile.
 
 **Adds to Basic:**
 - **Time trap** - Measures how long between page load and form submission. Requires at least 2 seconds (configurable), which catches bots that fill forms instantly but doesn't affect legitimate users who need time to type.
+- **Math challenge** - Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users. Question selection is deterministic based on form key for consistency.
 - Gracefully degrades if JavaScript disabled
 
 **Best for:**
 - Small business sites
 - Sites expecting moderate traffic
 - When you want an extra layer without complexity
+- Protection against both automated bots and manual spam operators
 
-**Trade-off:** Adds minimal friction for legitimate users, stops bots that bypass the honeypot.
+**Trade-off:** Adds minimal friction for legitimate users, stops bots that bypass the honeypot and manual spam operators.
 
 ### Strict (Future)
 ```php
@@ -271,6 +275,7 @@ Understanding how Relmin works helps with troubleshooting and customization.
 | `defenseLevel` | `standard` | `basic`/`standard`/`strict` |
 | `timeTrapMinMs` | `2000` | Minimum submit time (ms) |
 | `timeTrapGraceMs` | `50` | Jitter allowance (ms) |
+| `math_challenge` | `true` | Enable math verification question |
 
 ### Email Addresses Explained
 
@@ -359,6 +364,8 @@ Error codes are passed via URL: `?err=code`
 Current codes:
 - `validation` - Form key mismatch
 - `too_fast` - Time trap triggered
+- `math_wrong` - Math challenge answer incorrect
+- `math_invalid` - Math challenge answer invalid format
 - `name_missing` - Name field empty
 - `email_missing` - Email field empty
 - `message_missing` - Message field empty

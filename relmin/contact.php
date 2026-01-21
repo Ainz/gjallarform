@@ -32,6 +32,9 @@ $CFG = [
 'timeTrapEnabled' => true,   // turn the time-trap on/off
 'timeTrapMinMs'   => 2000,   // minimum render→submit time in milliseconds
 'timeTrapGraceMs' => 50,     // optional jitter allowance to avoid edge false-positives
+
+  // Math challenge (Standard tier spam defense)
+  'math_challenge' => true,    // Enable simple math verification question
 ];
 
 # ============================================================================
@@ -161,6 +164,37 @@ $message  = trim((string)($_POST['message']  ?? ''));
 $website  = trim((string)($_POST['website']  ?? ''));  // honeypot
 $key      = trim((string)($_POST['form_key'] ?? ''));
 $rts      = (int)($_POST['render_ts'] ?? 0);
+$math_answer = trim((string)($_POST['math_answer'] ?? ''));
+$math_index  = (int)($_POST['math_index'] ?? 0);
+
+/** Math challenge questions (simple arithmetic) */
+$math_questions = [
+  ['question' => 'What is 5 + 3?', 'answer' => '8'],
+  ['question' => 'What is 10 - 4?', 'answer' => '6'],
+  ['question' => 'What is 6 × 2?', 'answer' => '12'],
+  ['question' => 'What is 15 ÷ 3?', 'answer' => '5'],
+  ['question' => 'What is 7 + 8?', 'answer' => '15'],
+  ['question' => 'What is 20 - 11?', 'answer' => '9'],
+  ['question' => 'What is 4 × 3?', 'answer' => '12'],
+];
+
+/**
+ * Selects a math question deterministically based on form key.
+ * Same form key = same question for consistency.
+ *
+ * @param array $questions Array of math question/answer pairs
+ * @param string $formKey The form key to use as seed
+ * @return int The index of the question to use
+ */
+function get_math_question_index(array $questions, string $formKey): int {
+  if (empty($formKey)) {
+    // If no form key, use a random selection
+    return mt_rand(0, count($questions) - 1);
+  }
+  // Use CRC32 hash of form key to deterministically select question
+  $hash = crc32($formKey);
+  return abs($hash) % count($questions);
+}
 
 /** Honeypot: silent success (looks successful to bots, no mail sent) */
 if ($website !== '') {
@@ -170,6 +204,22 @@ if ($website !== '') {
 
 /** Optional CSRF-like shared secret */
 if (!empty($CFG['formKey']) && !hash_equals($CFG['formKey'], $key)) back_with_err('validation');
+
+/** Math challenge validation (Standard tier spam defense) */
+if (!empty($CFG['math_challenge'])) {
+  // Validate that the question index is within bounds
+  if ($math_index < 0 || $math_index >= count($math_questions)) {
+    back_with_err('math_invalid');
+  }
+
+  // Get the expected answer for this question
+  $expected_answer = $math_questions[$math_index]['answer'];
+
+  // Case-insensitive comparison, trim whitespace
+  if (strcasecmp(trim($math_answer), $expected_answer) !== 0) {
+    back_with_err('math_wrong');
+  }
+}
 
 /** Render-time trap (basic bot throttle): require >= MinMs (CFG) */
 if (!empty($CFG['timeTrapEnabled']) && $rts > 0) {

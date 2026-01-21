@@ -11,12 +11,14 @@
     <form class="relmin" action="/relmin/contact.php" method="post" novalidate>
       <label>Name <input type="text" name="fullname" required></label>
       <label>Email <input type="email" name="email" required></label>
+      <label id="math-challenge-label">Security question: <span id="math-question"></span> <input type="text" name="math_answer" required pattern="[0-9]+" title="Please enter numbers only"></label>
       <label>Subject <input type="text" name="subject" required></label>
       <label class="relmin__span-2">Message <textarea name="message" required></textarea></label>
 
       <!-- anti-abuse -->
       <input type="hidden" name="render_ts" value="">
       <input type="hidden" name="form_key" value="yoursite-random123">
+      <input type="hidden" name="math_index" value="">
       <input type="text" name="website" class="hp" autocomplete="off">
 
       <div class="relmin__actions relmin__span-2">

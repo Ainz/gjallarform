@@ -45,6 +45,65 @@
     function makeRef() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
 
     /**
+     * CRC32 hash function for deterministic math question selection.
+     * Used to ensure same form key always shows same math question.
+     * @param {string} str - Input string to hash
+     * @returns {number} CRC32 hash value
+     */
+    function crc32(str) {
+        var crc = 0 ^ (-1);
+        for (var i = 0; i < str.length; i++) {
+            crc = (crc >>> 8) ^ ((crc ^ str.charCodeAt(i)) & 0xFF);
+        }
+        return (crc ^ (-1)) >>> 0;
+    }
+
+    /**
+     * Math challenge questions (must match PHP backend).
+     * Simple arithmetic questions for spam defense.
+     */
+    var mathQuestions = [
+        { question: 'What is 5 + 3?', answer: '8' },
+        { question: 'What is 10 - 4?', answer: '6' },
+        { question: 'What is 6 × 2?', answer: '12' },
+        { question: 'What is 15 ÷ 3?', answer: '5' },
+        { question: 'What is 7 + 8?', answer: '15' },
+        { question: 'What is 20 - 11?', answer: '9' },
+        { question: 'What is 4 × 3?', answer: '12' }
+    ];
+
+    /**
+     * Initializes math challenge field with deterministic question selection.
+     * Selects question based on form key hash to ensure consistency with backend.
+     * @param {HTMLFormElement} form - The form containing the math challenge
+     */
+    function initMathChallenge(form) {
+        if (!form) return;
+
+        var questionEl = $('#math-question', form);
+        var indexEl = form.querySelector('[name="math_index"]');
+        var formKeyEl = form.querySelector('[name="form_key"]');
+
+        if (!questionEl || !indexEl || !formKeyEl) return;
+
+        var formKey = formKeyEl.value || '';
+        var index = 0;
+
+        if (formKey) {
+            // Use same deterministic logic as PHP backend
+            var hash = crc32(formKey);
+            index = Math.abs(hash) % mathQuestions.length;
+        } else {
+            // Fallback to random if no form key
+            index = Math.floor(Math.random() * mathQuestions.length);
+        }
+
+        // Display the question and store the index
+        questionEl.textContent = mathQuestions[index].question;
+        indexEl.value = String(index);
+    }
+
+    /**
      * Checks if a specific error code is present in the URL query string.
      * Used to detect validation errors after PRG redirect from server.
      * @param {string} code - Error code to check for (e.g., 'email_invalid', 'too_fast')
@@ -161,7 +220,7 @@ var CSS = `
      */
     function snapshotForm(form) {
         var get = function (n) { var el = form.querySelector('[name="' + n + '"]'); return el ? el.value : '' };
-        var p = { fullname: get('fullname'), email: get('email'), subject: get('subject'), message: get('message') };
+        var p = { fullname: get('fullname'), email: get('email'), subject: get('subject'), message: get('message'), math_answer: get('math_answer') };
         Sset(K.draft, JSON.stringify(p)); Sset(K.draftTs, String(Date.now()));
     }
 
@@ -183,7 +242,7 @@ var CSS = `
         if (!validDraft()) return; var raw = Sget(K.draft); if (!raw) return;
         try {
             var d = JSON.parse(raw), set = function (n, v) { var el = form.querySelector('[name="' + n + '"]'); if (el) el.value = v || ''; };
-            set('fullname', d.fullname); set('email', d.email); set('subject', d.subject); set('message', d.message);
+            set('fullname', d.fullname); set('email', d.email); set('subject', d.subject); set('message', d.message); set('math_answer', d.math_answer);
         } catch (_) { }
     }
 
@@ -225,6 +284,34 @@ var CSS = `
             checkEmailAscii();
             setTimeout(function () { input.reportValidity && input.reportValidity(); input.focus({ preventScroll: false }); }, 0);
         }
+    }
+
+    /**
+     * Attaches validation to math challenge answer input.
+     * Ensures only numeric answers are allowed for the math challenge.
+     *
+     * If page loads with math-related error codes (?err=math_*), automatically
+     * displays the validation bubble and focuses the field.
+     *
+     * @param {HTMLInputElement} input - Math answer input element to guard
+     */
+    function attachMathChallengeGuard(input) {
+        if (!input) return;
+
+        // If server bounced with math_* codes, show error and focus field
+        if (hasErrCode('math_wrong') || hasErrCode('math_invalid')) {
+            var msg = hasErrCode('math_wrong') ? 'Incorrect answer. Please try again.' : 'Invalid answer format.';
+            input.setCustomValidity(msg);
+            setTimeout(function () {
+                input.reportValidity && input.reportValidity();
+                input.focus({ preventScroll: false });
+            }, 0);
+        }
+
+        // Clear custom validity on input
+        input.addEventListener('input', function() {
+            input.setCustomValidity('');
+        });
     }
 
     // ---------------------------------------------------------------------------
@@ -294,8 +381,12 @@ var CSS = `
             var tsEl = form.querySelector('[name="render_ts"]') || document.querySelector('[name="render_ts"]');
             if (tsEl) tsEl.value = String(Date.now());
 
+            // Initialize math challenge
+            initMathChallenge(form);
+
             // Attach field helpers
             attachEmailAsciiGuard($('[name="email"]', form));
+            attachMathChallengeGuard($('[name="math_answer"]', form));
 
             if (hasErr) rehydrate(form); else[K.draft, K.draftTs].forEach(Sdel);
         }
