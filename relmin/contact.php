@@ -11,6 +11,9 @@ declare(strict_types=1);
 # CONFIG — edit ONLY this block (no need to touch anything below)
 # ============================================================================
 $CFG = [
+  // Emergency kill switch
+  'form_disabled' => true,  // Set to false to re-enable form
+
   // Mail routing / deliverability
   'to'          => 'admin@yoursite.tld',        // Where the mail ultimately gets sent (required)
   'from'        => 'form-engine@yoursite.tld',  // Must be on your domain, can be a custom e-mail, but also the same as the "to" e-mail
@@ -36,6 +39,14 @@ $CFG = [
   // Math challenge (Standard tier spam defense)
   'math_challenge' => true,    // Enable simple math verification question
 ];
+
+# ============================================================================
+# EMERGENCY KILL SWITCH CHECK
+# ============================================================================
+if ($CFG['form_disabled'] ?? false) {
+    http_response_code(503);
+    exit('Contact form temporarily disabled due to spam protection. Please try again later.');
+}
 
 # ============================================================================
 # DO NOT EDIT BELOW THIS LINE
