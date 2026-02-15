@@ -74,7 +74,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - PHP `mail()` function enabled
 - Write access to upload files
 
-**Mail Server Setup :warning: (Critical)**
+:warning: **Mail Server Setup  (Critical)**
 Before deploying, configure your mail server:
 - **SPF records** for your domain (<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank" rel="noopener noreferrer">what's SPF?</a>)
 - **DKIM signing** enabled (<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" target="_blank" rel="noopener noreferrer">what's DKIM?</a>)
@@ -198,7 +198,7 @@ Choose your protection level based on your site's traffic and risk profile.
 - Rate limiting by IP address
 - Requires file/cache storage
 
-**Status:** Planned for version 1.x. Not implemented in 0.90-RC.
+**Status:** Planned for later version. Not implemented in current release.
 
 ---
 
