@@ -1,10 +1,10 @@
 <img width="800" height="" alt="image" src="https://github.com/user-attachments/assets/39001114-08cf-4540-9fb6-705be251a8d2" />
 
-# Relmin
+# Gjallarform
 
 **A minimal, secure contact form for PHP shared hosting**
 
-Relmin is a self-contained contact form solution designed for simplicity, security, and ease of deployment. No dependencies, no frameworks, no database—just PHP's native `mail()` function and clean defensive coding.
+Gjallarform is a self-contained contact form solution designed for simplicity, security, and ease of deployment. No dependencies, no frameworks, no database—just PHP's native `mail()` function and clean defensive coding.
 
 Perfect for personal sites, portfolios, and small business pages running on shared hosting.
 
@@ -12,7 +12,8 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 ## Table of Contents
 
-- [Why Relmin?](#why-relmin)
+- [Name Origin](#name-origin)
+- [Why Gjallarform?](#why-gjallarform)
 - [Quick Start](#quick-start)
   - [Prerequisites](#1-prerequisites)
   - [Installation](#2-installation)
@@ -34,7 +35,13 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 ---
 
-## Why Relmin?
+## Name Origin
+
+**Gjallarform** combines "Gjallar-" (from Gjallarhorn, the horn blown by the god Heimdall in Norse mythology to signal important events) with "form" (contact form). Just as the Gjallarhorn alerts the gods, Gjallarform alerts you to incoming messages.
+
+---
+
+## Why Gjallarform?
 
 **Built for Real Constraints**
 - Works on basic shared hosting (no special PHP extensions)
@@ -83,9 +90,9 @@ Before deploying, configure your mail server:
 **Upload Files**
 ```
 your-site/
-├── relmin/
-│   ├── contact.php
-│   └── relmin.js
+├── gjallarform/
+│   ├── gjallarform.php
+│   └── gjallarform.js
 ├── contact.html
 └── thankyou.html
 ```
@@ -120,7 +127,7 @@ $CFG = [
 **Update HTML Form**
 In `contact.html`, change the form action:
 ```html
-<form class="relmin" action="https://www.yoursite.com/relmin/contact.php" method="POST">
+<form class="gjallarform" action="https://www.yoursite.com/gjallarform/gjallarform.php" method="POST">
 ```
 
 Update the form key value to match your PHP config:
@@ -130,7 +137,7 @@ Update the form key value to match your PHP config:
 
 **Link the JavaScript**
 ```html
-<script src="https://www.yoursite.com/relmin/relmin.js" defer></script>
+<script src="https://www.yoursite.com/gjallarform/gjallarform.js" defer></script>
 ```
 
 ### 3. Test It
@@ -197,7 +204,7 @@ Choose your protection level based on your site's traffic and risk profile.
 
 ## Form Flow
 
-Understanding how Relmin works helps with troubleshooting and customization.
+Understanding how Gjallarform works helps with troubleshooting and customization.
 
 ### User Journey (Success Path)
 
@@ -319,7 +326,7 @@ You'll need to modify:
 
 ### Page Filenames
 
-By default, Relmin expects `contact.html` and `thankyou.html` at your site root. You can customize these filenames or use subdirectories by editing the `$CFG` array:
+By default, Gjallarform expects `contact.html` and `thankyou.html` at your site root. You can customize these filenames or use subdirectories by editing the `$CFG` array:
 
 ```php
 $CFG = [
@@ -339,18 +346,18 @@ The leading slash is handled automatically, so you can use either `contact.html`
 
 ### Styling
 
-CSS is injected by `relmin.js`. To customize:
+CSS is injected by `gjallarform.js`. To customize:
 
 **Option 1:** Override in your site's CSS
 ```css
-.relmin input,
-.relmin textarea {
+.gjallarform input,
+.gjallarform textarea {
   border-color: your-color;
   /* etc */
 }
 ```
 
-**Option 2:** Modify the CSS string in `relmin.js`
+**Option 2:** Modify the CSS string in `gjallarform.js`
 ```javascript
 var CSS = `
   /* Your custom styles here */
@@ -373,7 +380,7 @@ Current codes:
 - `email_invalid` - Email format invalid
 - `send_failed` - Mail delivery failed
 
-Custom error handling in JavaScript (see `hasErrCode()` function in `relmin.js`).
+Custom error handling in JavaScript (see `hasErrCode()` function in `gjallarform.js`).
 
 ---
 
@@ -442,7 +449,7 @@ If legitimate users are getting "too fast" errors:
 
 ## Security Notes
 
-### What Relmin Protects Against
+### What Gjallarform Protects Against
 
 ✅ Most automated bots (honeypot)  
 ✅ Fast form scrapers (time trap)  
@@ -468,7 +475,7 @@ If legitimate users are getting "too fast" errors:
 
 ### Privacy Considerations
 
-Relmin logs IP addresses by default. Ensure you:
+Gjallarform logs IP addresses by default. Ensure you:
 - Disclose this in your form (✅ already done in example HTML)
 - Comply with GDPR/privacy laws in your jurisdiction
 - Have a privacy policy that mentions form submissions
@@ -482,9 +489,9 @@ $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
 ## GDPR and Privacy Compliance
 
-Relmin is designed for GDPR compliance when properly configured:
+Gjallarform is designed for GDPR compliance when properly configured:
 
-**What Relmin Does:**
+**What Gjallarform Does:**
 - ✅ Processes only data the user explicitly provides
 - ✅ Doesn't use cookies (sessionStorage is local-only, not transmitted)
 - ✅ Includes IP disclosure notice in example form
@@ -508,7 +515,7 @@ Relmin is designed for GDPR compliance when properly configured:
 
 3. Honor deletion requests by removing emails from your inbox/archive
 
-**Note:** Relmin doesn't log to database, so there's no persistent storage to manage beyond your email inbox.
+**Note:** Gjallarform doesn't log to database, so there's no persistent storage to manage beyond your email inbox.
 
 ---
 
@@ -534,7 +541,7 @@ Before going live:
 
 ## License
 
-Relmin is free software licensed under the GNU General Public License v3.0 or later.
+Gjallarform is free software licensed under the GNU General Public License v3.0 or later.
 
 © 2025–present Conram.it  
 SPDX-License-Identifier: GPL-3.0-or-later
@@ -542,7 +549,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 See [LICENSE](LICENSE) file for full terms.
 
 You are free to:
-- Use Relmin for any purpose
+- Use Gjallarform for any purpose
 - Study and modify the source code
 - Distribute original or modified versions
 

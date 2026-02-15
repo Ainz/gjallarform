@@ -1,6 +1,6 @@
 <?php
 /**
- * Relmin — minimal contact form handler (PRG + PHP sendmail)
+ * Gjallarform — minimal contact form handler (PRG + PHP sendmail)
  * © 2025–present Conram.it. All rights reserved.
  * SPDX-License-Identifier: GPL-3.0-or-later
  * https://www.conram.it
