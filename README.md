@@ -74,7 +74,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - PHP `mail()` function enabled
 - Write access to upload files
 
-**Mail Server Setup (Critical)**
+**Mail Server Setup :warning: (Critical)**
 Before deploying, configure your mail server:
 - **SPF records** for your domain (<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank" rel="noopener noreferrer">what's SPF?</a>)
 - **DKIM signing** enabled (<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" target="_blank" rel="noopener noreferrer">what's DKIM?</a>)
@@ -104,7 +104,7 @@ Open `gjallarform/gjallarform.php` and edit only the `$CFG` array:
 $CFG = [
   // Mail routing
   'to'          => 'you@yourdomain.com',        // Where submissions go
-  'from'        => 'form-engine@yourdomain.com', // MUST be on your domain
+  'from'        => 'form-engine@yourdomain.com', // MUST be on your domain, can be same as "to"
   'fromDisplay' => 'Your Site Contact Form',
   'replyDisplay'=> 'Your Site',
 
@@ -113,7 +113,7 @@ $CFG = [
   'siteUrl'      => 'https://www.yoursite.com',
   'contactPage'  => 'contact.html',    // Customizable contact form filename
   'thankYouPage' => 'thankyou.html',   // Customizable thank you page filename
-  'timezone'     => 'America/New_York',
+  'timezone'     => 'Europe/Stockholm',
 
   // Defense level
   'defenseLevel'    => 'standard',  // 'basic', 'standard', or 'strict'
@@ -189,7 +189,7 @@ Choose your protection level based on your site's traffic and risk profile.
 
 **Trade-off:** Adds minimal friction for legitimate users, stops bots that bypass the honeypot and manual spam operators.
 
-### Strict (Future)
+### Strict (Future) Not cuurently implemented
 ```php
 'defenseLevel' => 'strict',
 ```
