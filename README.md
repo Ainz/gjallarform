@@ -104,7 +104,7 @@ Open `gjallarform/gjallarform.php` and edit only the `$CFG` array:
 $CFG = [
   // Mail routing
   'to'          => 'you@yourdomain.com',        // Where submissions go
-  'from'        => 'form-engine@yourdomain.com', // MUST be on your domain, can be same as "to"
+  'from'        => 'form-engine@yourdomain.com', // MUST be on your domain, can be same as 'to'
   'fromDisplay' => 'Your Site Contact Form',
   'replyDisplay'=> 'Your Site',
 
