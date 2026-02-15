@@ -1,5 +1,5 @@
 /*!
- * Relmin UI helper (lean + field bubbles)
+ * Gjallarform UI helper (lean + field bubbles)
  * - Native validation bubbles only (no global banner)
  * - Email customValidity helper (friendly messages)
  * - Draft cache + TY page data via sessionStorage
@@ -115,22 +115,22 @@
     // Minimal CSS (Publii-safe <style>)
     // ---------------------------------------------------------------------------
 var CSS = `
-.relmin-wrapper{container-type:inline-size;container-name:relminwrapper}
-.relmin-wrapper,.relmin{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
-.relmin{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
-.relmin__span-2{grid-column:1 / -1}
-.relmin label{display:block;font-weight:700;margin-bottom:.4rem}
-.relmin input,.relmin textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
-.relmin input:focus,.relmin textarea:focus{outline:2px solid rgba(0,108,255,.2);border-color:#6aa3ff}
-.relmin__actions{margin-top:.5rem}
-.relmin button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
+.gjallarform-wrapper{container-type:inline-size;container-name:gjallarformwrapper}
+.gjallarform-wrapper,.gjallarform{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.gjallarform{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
+.gjallarform__span-2{grid-column:1 / -1}
+.gjallarform label{display:block;font-weight:700;margin-bottom:.4rem}
+.gjallarform input,.gjallarform textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
+.gjallarform input:focus,.gjallarform textarea:focus{outline:2px solid rgba(0,108,255,.2);border-color:#6aa3ff}
+.gjallarform__actions{margin-top:.5rem}
+.gjallarform button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
 .hp{position:absolute;left:-500vw;top:-500vh;height:0;width:0;overflow:hidden}
-@media (max-width:768px){.relmin{grid-template-columns:1fr}}
-@container relminwrapper (max-width:600px){.relmin{grid-template-columns:1fr}}
+@media (max-width:768px){.gjallarform{grid-template-columns:1fr}}
+@container gjallarformwrapper (max-width:600px){.gjallarform{grid-template-columns:1fr}}
 `;
-    if (!document.getElementById('relmin-style')) {
+    if (!document.getElementById('gjallarform-style')) {
         var st = document.createElement('style');
-        st.id = 'relmin-style';
+        st.id = 'gjallarform-style';
         st.textContent = CSS;
         document.head.appendChild(st);
     }
@@ -167,7 +167,7 @@ var CSS = `
     // ---------------------------------------------------------------------------
     // TY data API
     // ---------------------------------------------------------------------------
-    window.Relmin = window.Relmin || {};
+    window.Gjallarform = window.Gjallarform || {};
 
     /**
      * Stores thank you page data in sessionStorage for display after submission.
@@ -179,7 +179,7 @@ var CSS = `
      * @param {string} [payload.subject] - Message subject (truncated to 120 chars)
      * @param {string} [payload.ref] - Reference ID (generated if not provided)
      */
-    window.Relmin.setThankYou = function (payload) {
+    window.Gjallarform.setThankYou = function (payload) {
         Sset(K.tyName, firstWord(payload.name || ''));
         Sset(K.tySubject, String(payload.subject || '').slice(0, 120));
         Sset(K.tyRef, (payload.ref && String(payload.ref).trim()) || makeRef());
@@ -191,15 +191,15 @@ var CSS = `
      * makes the details box visible, then cleans up all stored data.
      *
      * Expected DOM structure on thank you page:
-     * - #relmin-thankyou-details: Container to show (hidden by default)
-     * - #relmin-thankyou-name: Element to display submitter's first name
-     * - #relmin-thankyou-subject: Element to display message subject
-     * - #relmin-thankyou-ref: Element to display reference ID
+     * - #gjallarform-thankyou-details: Container to show (hidden by default)
+     * - #gjallarform-thankyou-name: Element to display submitter's first name
+     * - #gjallarform-thankyou-subject: Element to display message subject
+     * - #gjallarform-thankyou-ref: Element to display reference ID
      *
      * Cleans up: All thank you data, draft data, and timestamps from storage.
      */
-    window.Relmin.renderThankYou = function () {
-        var box = $('#relmin-thankyou-details'), n = $('#relmin-thankyou-name'), s = $('#relmin-thankyou-subject'), r = $('#relmin-thankyou-ref');
+    window.Gjallarform.renderThankYou = function () {
+        var box = $('#gjallarform-thankyou-details'), n = $('#gjallarform-thankyou-name'), s = $('#gjallarform-thankyou-subject'), r = $('#gjallarform-thankyou-ref');
         var name = Sget(K.tyName), subj = Sget(K.tySubject), ref = Sget(K.tyRef);
         if (box && (name || subj || ref)) {
             if (n) n.textContent = name || '—'; if (s) s.textContent = subj || '—'; if (r) r.textContent = ref || '—';
@@ -352,7 +352,7 @@ var CSS = `
         // If validation passed, store data for thank you page
         var fullname = (f.querySelector('[name="fullname"]') || {}).value || '';
         var subject = (f.querySelector('[name="subject"]') || {}).value || '';
-        window.Relmin.setThankYou({ name: fullname, subject });
+        window.Gjallarform.setThankYou({ name: fullname, subject });
     }, true);
 
     // ---------------------------------------------------------------------------
@@ -371,7 +371,7 @@ var CSS = `
      * - Renders personalized thank you message if thank you root element exists
      */
     document.addEventListener('DOMContentLoaded', function () {
-        var form = $('form.relmin');
+        var form = $('form.gjallarform');
         var hasErr = /[?&]err=/.test(location.search);
 
         if (form) {
@@ -391,8 +391,8 @@ var CSS = `
             if (hasErr) rehydrate(form); else[K.draft, K.draftTs].forEach(Sdel);
         }
 
-        if (document.getElementById('relmin-thankyou-root')) {
-            window.Relmin.renderThankYou();
+        if (document.getElementById('gjallarform-thankyou-root')) {
+            window.Gjallarform.renderThankYou();
         }
     });
 
@@ -409,7 +409,7 @@ var CSS = `
      * @param {PageTransitionEvent} e - pageshow event with persisted property
      */
     window.addEventListener('pageshow', function (e) {
-        var form = $('form.relmin'); var hasErr = /[?&]err=/.test(location.search);
+        var form = $('form.gjallarform'); var hasErr = /[?&]err=/.test(location.search);
         if (form && e.persisted && !hasErr) { try { form.reset(); } catch (_) { } [K.draft, K.draftTs].forEach(Sdel); }
     });
 })();

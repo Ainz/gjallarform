@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Relmin will be documented in this file.
+All notable changes to Gjallarform will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -47,7 +47,7 @@ Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds 
 
 ### Fixed
 - Removed duplicate `render_ts` POST variable read in validation logic
-- Updated outdated CSS class references in documentation (`.cf` → `.relmin`)
+- Updated outdated CSS class references in documentation (`.cf` → `.gjallarform`)
 
 ### Changed
 - License headers updated from `Proprietary` to `GPL-3.0-or-later` in source files to match LICENSE file and README
@@ -56,7 +56,7 @@ Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds 
 (Previously released as 0.99-RC)
 
 ### About This Release
-Release Candidate for Relmin 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
+Release Candidate for Gjallarform 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
 
 ### Core Features
 
@@ -107,9 +107,9 @@ Release Candidate for Relmin 1.0. Core functionality is stable and tested. Suita
 
 ### File Structure
 ```
-relmin/
-├── contact.php          # Backend handler
-├── relmin.js            # Frontend UI layer
+gjallarform/
+├── gjallarform.php      # Backend handler
+├── gjallarform.js       # Frontend UI layer
 ├── contact.html         # Example form markup
 ├── thankyou.html        # Example thank-you page
 ├── README.md            # Documentation
