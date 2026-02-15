@@ -107,9 +107,10 @@ Release Candidate for Gjallarform 1.0. Core functionality is stable and tested. 
 
 ### File Structure
 ```
-gjallarform/
-├── gjallarform.php      # Backend handler
-├── gjallarform.js       # Frontend UI layer
+your-site/
+├── gjallarform/
+│   ├── gjallarform.php  # Backend handler
+│   └── gjallarform.js   # Frontend UI layer
 ├── contact.html         # Example form markup
 ├── thankyou.html        # Example thank-you page
 ├── README.md            # Documentation
@@ -118,7 +119,7 @@ gjallarform/
 ```
 
 ### Configuration
-All user configuration is centralized in the `$CFG` array at the top of `contact.php`. No code changes required below the config block.
+All user configuration is centralized in the `$CFG` array at the top of `gjallarform.php`. No code changes required below the config block.
 
 ### Upgrade Notes
 This is the first public release candidate. No upgrade path exists from earlier private versions.

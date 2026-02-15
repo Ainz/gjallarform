@@ -97,8 +97,8 @@ your-site/
 └── thankyou.html
 ```
 
-**Configure contact.php**
-Open `contact.php` and edit only the `$CFG` array:
+**Configure gjallarform.php**
+Open `gjallarform/gjallarform.php` and edit only the `$CFG` array:
 
 ```php
 $CFG = [
@@ -220,7 +220,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 3. **Submit**
    - JavaScript validates form before submission
-   - Form POSTs to `contact.php`
+   - Form POSTs to `gjallarform/gjallarform.php`
    - PHP validates all inputs server-side
 
 4. **PHP Processing**
@@ -480,7 +480,7 @@ Gjallarform logs IP addresses by default. Ensure you:
 - Comply with GDPR/privacy laws in your jurisdiction
 - Have a privacy policy that mentions form submissions
 
-To disable IP logging, remove this line from `contact.php`:
+To disable IP logging, remove this line from `gjallarform/gjallarform.php`:
 ```php
 $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 ```

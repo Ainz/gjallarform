@@ -138,7 +138,7 @@ var CSS = `
     // ---------------------------------------------------------------------------
     // sessionStorage keys + helpers
     // ---------------------------------------------------------------------------
-    var NS = 'ctls_';  // Namespace prefix to avoid collisions with other scripts
+    var NS = 'gjf_';  // Namespace prefix to avoid collisions with other scripts
     var K = { tyName: NS + 'ty_name', tySubject: NS + 'ty_subject', tyRef: NS + 'ty_ref', draft: NS + 'draft', draftTs: NS + 'draft_ts' };
     var TTL = 30 * 60 * 1000;  // Time-to-live for drafts: 30 minutes in milliseconds
 
