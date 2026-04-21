@@ -45,17 +45,38 @@
     function makeRef() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
 
     /**
-     * CRC32 hash function for deterministic math question selection.
-     * Used to ensure same form key always shows same math question.
-     * @param {string} str - Input string to hash
-     * @returns {number} CRC32 hash value
+     * CRC32 lookup table — computed once at module load.
+     * Implements the standard IEEE 802.3 reflected polynomial (0xEDB88320),
+     * which is identical to PHP's built-in crc32() function.
+     */
+    var CRC32_TABLE = (function () {
+        var t = new Uint32Array(256);
+        for (var i = 0; i < 256; i++) {
+            var c = i;
+            for (var k = 0; k < 8; k++) {
+                c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+            }
+            t[i] = c;
+        }
+        return t;
+    }());
+
+    /**
+     * Standard IEEE 802.3 CRC32 — output matches PHP's crc32() exactly.
+     *
+     * Returns an unsigned 32-bit integer (via >>> 0), mirroring PHP's
+     * `crc32($str) & 0xFFFFFFFF` treatment, so both sides select the same
+     * math question for a given formKey without further conversion.
+     *
+     * @param {string} str - ASCII input string (formKey is always ASCII)
+     * @returns {number} Unsigned 32-bit CRC32 value
      */
     function crc32(str) {
-        var crc = 0 ^ (-1);
+        var crc = 0xFFFFFFFF;
         for (var i = 0; i < str.length; i++) {
-            crc = (crc >>> 8) ^ ((crc ^ str.charCodeAt(i)) & 0xFF);
+            crc = CRC32_TABLE[(crc ^ str.charCodeAt(i)) & 0xFF] ^ (crc >>> 8);
         }
-        return (crc ^ (-1)) >>> 0;
+        return (crc ^ 0xFFFFFFFF) >>> 0;
     }
 
     /**
@@ -73,8 +94,14 @@
     ];
 
     /**
-     * Initializes math challenge field with deterministic question selection.
-     * Selects question based on form key hash to ensure consistency with backend.
+     * Initializes the math challenge field with deterministic question selection.
+     *
+     * Uses the same IEEE 802.3 CRC32 algorithm as PHP's crc32() so the browser
+     * and server independently arrive at the same question index for a given
+     * formKey. When formKey is present the server ignores the posted math_index
+     * and recomputes it — the hidden field is only used as a fallback when
+     * formKey is intentionally left blank in $CFG.
+     *
      * @param {HTMLFormElement} form - The form containing the math challenge
      */
     function initMathChallenge(form) {
@@ -90,9 +117,8 @@
         var index = 0;
 
         if (formKey) {
-            // Use same deterministic logic as PHP backend
-            var hash = crc32(formKey);
-            index = Math.abs(hash) % mathQuestions.length;
+            // crc32() returns an unsigned 32-bit value; no abs() needed.
+            index = crc32(formKey) % mathQuestions.length;
         } else {
             // Fallback to random if no form key
             index = Math.floor(Math.random() * mathQuestions.length);
@@ -387,6 +413,32 @@ var CSS = `
             // Attach field helpers
             attachEmailAsciiGuard($('[name="email"]', form));
             attachMathChallengeGuard($('[name="math_answer"]', form));
+
+            // Surface server-side length rejections as field-level validation
+            // bubbles. HTML maxlength prevents these in normal use; this handles
+            // the case where limits were bypassed (e.g. via curl / dev tools).
+            var lengthErrs = [
+                { code: 'name_too_long',    sel: '[name="fullname"]', msg: 'Name must be 200 characters or fewer.'       },
+                { code: 'email_too_long',   sel: '[name="email"]',    msg: 'Email must be 254 characters or fewer.'      },
+                { code: 'subject_too_long', sel: '[name="subject"]',  msg: 'Subject must be 300 characters or fewer.'    },
+                { code: 'message_too_long', sel: '[name="message"]',  msg: 'Message must be 10,000 characters or fewer.' }
+            ];
+            var firstLengthErrEl = null;
+            lengthErrs.forEach(function (e) {
+                if (hasErrCode(e.code)) {
+                    var el = $(e.sel, form);
+                    if (el) {
+                        el.setCustomValidity(e.msg);
+                        if (!firstLengthErrEl) firstLengthErrEl = el;
+                    }
+                }
+            });
+            if (firstLengthErrEl) {
+                setTimeout(function () {
+                    firstLengthErrEl.reportValidity && firstLengthErrEl.reportValidity();
+                    firstLengthErrEl.focus({ preventScroll: false });
+                }, 0);
+            }
 
             if (hasErr) rehydrate(form); else[K.draft, K.draftTs].forEach(Sdel);
         }

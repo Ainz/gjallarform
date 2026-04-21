@@ -99,6 +99,16 @@ function compute_base_url(array $CFG): string {
 }
 $BASE_URL = compute_base_url($CFG);
 
+// Strip CR/LF from every $CFG value that will appear in an email header.
+// $subject gets the same treatment later (line ~264); doing these here ensures
+// siteName, fromDisplay, and replyDisplay are clean before any use downstream.
+foreach (['siteName', 'fromDisplay', 'replyDisplay'] as $_hdrKey) {
+  if (isset($CFG[$_hdrKey])) {
+    $CFG[$_hdrKey] = preg_replace('/[\r\n]+/', ' ', $CFG[$_hdrKey]);
+  }
+}
+unset($_hdrKey);
+
 /**
  * Returns the computed base URL for the site.
  *
@@ -176,7 +186,6 @@ $website  = trim((string)($_POST['website']  ?? ''));  // honeypot
 $key      = trim((string)($_POST['form_key'] ?? ''));
 $rts      = (int)($_POST['render_ts'] ?? 0);
 $math_answer = trim((string)($_POST['math_answer'] ?? ''));
-$math_index  = (int)($_POST['math_index'] ?? 0);
 
 /** Math challenge questions (simple arithmetic) */
 $math_questions = [
@@ -190,21 +199,25 @@ $math_questions = [
 ];
 
 /**
- * Selects a math question deterministically based on form key.
- * Same form key = same question for consistency.
+ * Selects a math question index deterministically from the form key.
  *
- * @param array $questions Array of math question/answer pairs
- * @param string $formKey The form key to use as seed
- * @return int The index of the question to use
+ * Uses the standard IEEE 802.3 CRC32 polynomial (same algorithm as PHP's
+ * built-in crc32()), masked to an unsigned 32-bit value with & 0xFFFFFFFF so
+ * the result matches JavaScript's `>>> 0` treatment exactly. This ensures the
+ * server independently arrives at the same question the browser displayed.
+ *
+ * Falls back to cryptographically random selection when formKey is absent.
+ *
+ * @param array  $questions Array of math question/answer pairs
+ * @param string $formKey   The site's configured form key (used as CRC32 seed)
+ * @return int Index into $questions
  */
 function get_math_question_index(array $questions, string $formKey): int {
   if (empty($formKey)) {
-    // If no form key, use a random selection
-    return mt_rand(0, count($questions) - 1);
+    return random_int(0, count($questions) - 1);
   }
-  // Use CRC32 hash of form key to deterministically select question
-  $hash = crc32($formKey);
-  return abs($hash) % count($questions);
+  // & 0xFFFFFFFF gives unsigned 32-bit — matches JS crc32() >>> 0 output.
+  return (crc32($formKey) & 0xFFFFFFFF) % count($questions);
 }
 
 /** Honeypot: silent success (looks successful to bots, no mail sent) */
@@ -218,15 +231,22 @@ if (!empty($CFG['formKey']) && !hash_equals($CFG['formKey'], $key)) back_with_er
 
 /** Math challenge validation (Standard tier spam defense) */
 if (!empty($CFG['math_challenge'])) {
-  // Validate that the question index is within bounds
+  // When formKey is set, derive the expected question index server-side so the
+  // client cannot choose a different (potentially easier) question by sending
+  // an arbitrary math_index. Without formKey, fall back to the client-reported
+  // index so the form still works when the key is intentionally left blank.
+  if (!empty($CFG['formKey'])) {
+    $math_index = get_math_question_index($math_questions, $CFG['formKey']);
+  } else {
+    $math_index = (int)($_POST['math_index'] ?? 0);
+  }
+
   if ($math_index < 0 || $math_index >= count($math_questions)) {
     back_with_err('math_invalid');
   }
 
-  // Get the expected answer for this question
   $expected_answer = $math_questions[$math_index]['answer'];
 
-  // Case-insensitive comparison, trim whitespace
   if (strcasecmp(trim($math_answer), $expected_answer) !== 0) {
     back_with_err('math_wrong');
   }
@@ -252,6 +272,12 @@ if ($name === '')    back_with_err('name_missing');
 if ($email === '')   back_with_err('email_missing');
 if ($message === '') back_with_err('message_missing');
 
+/** Field length limits (server-side safety net; HTML maxlength mirrors these) */
+if (strlen($name)    > 200)   back_with_err('name_too_long');
+if (strlen($email)   > 254)   back_with_err('email_too_long');    // RFC 5321 max
+if (strlen($subject) > 300)   back_with_err('subject_too_long');
+if (strlen($message) > 10000) back_with_err('message_too_long');
+
 /** Email validation (ASCII only, single "@", sane shape) */
 if (preg_match('/[^\x00-\x7F]/', $email))                back_with_err('email_ascii_only');
 if (substr_count($email, '@') !== 1)                     back_with_err('email_invalid_at');
@@ -264,11 +290,17 @@ if ($subject === '') $subject = $CFG['siteName'] . ' Contact';
 $subject = preg_replace('/[\r\n]+/', ' ', $subject);
 
 /** Compose */
-$tz   = new DateTimeZone($CFG['timezone'] ?: 'UTC');
+// DateTimeZone throws on invalid timezone strings; fall back to UTC so a
+// misconfigured 'timezone' value never produces an unhandled fatal error.
+try {
+  $tz = new DateTimeZone($CFG['timezone'] ?: 'UTC');
+} catch (\Exception $e) {
+  $tz = new DateTimeZone('UTC');
+}
 $when = (new DateTime('now', $tz))->format('Y-m-d H:i T');
 $ip   = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-$ref  = strtoupper(substr(md5(uniqid('', true)), 0, 6));               // short reference
+$ref  = strtoupper(bin2hex(random_bytes(3)));  // 6-char hex ref via CSPRNG
 $tag  = '[' . $CFG['siteName'] . ' Contact]';
 $subj = $tag . ' [' . $ref . '] ' . $subject;
 
@@ -296,7 +328,10 @@ $ok = @mail($CFG['to'], $subj, $adminBody, $headers_str, $envelope);
 if (!$ok) back_with_err('send_failed');
 
 /** Confirmation to submitter (best-effort) */
-$first = trim($name) !== '' ? preg_split('/\s+/', trim($name))[0] : 'there';
+// preg_split() returns false on error; guard against TypeError on false[0].
+$_parts = preg_split('/\s+/', $name);
+$first  = ($_parts !== false && isset($_parts[0]) && $_parts[0] !== '') ? $_parts[0] : 'there';
+unset($_parts);
 $confirmSubject = "Copy of your message — {$CFG['siteName']} [{$ref}]";
 $confirmBody =
   "Hi {$first},\n\n" .

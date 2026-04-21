@@ -70,7 +70,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 ### 1. Prerequisites
 
 **Server Requirements**
-- PHP 8.0 or higher
+- PHP 8.1 or higher
 - PHP `mail()` function enabled
 - Write access to upload files
 
@@ -189,7 +189,7 @@ Choose your protection level based on your site's traffic and risk profile.
 
 **Trade-off:** Adds minimal friction for legitimate users, stops bots that bypass the honeypot and manual spam operators.
 
-### Strict (Future) Not cuurently implemented
+### Strict (Future) — Not currently implemented
 ```php
 'defenseLevel' => 'strict',
 ```
@@ -376,6 +376,10 @@ Current codes:
 - `name_missing` - Name field empty
 - `email_missing` - Email field empty
 - `message_missing` - Message field empty
+- `name_too_long` - Name exceeds 200 characters
+- `email_too_long` - Email exceeds 254 characters
+- `subject_too_long` - Subject exceeds 300 characters
+- `message_too_long` - Message exceeds 10,000 characters
 - `email_ascii_only` - Non-ASCII characters in email
 - `email_invalid` - Email format invalid
 - `send_failed` - Mail delivery failed
@@ -453,9 +457,11 @@ If legitimate users are getting "too fast" errors:
 
 ✅ Most automated bots (honeypot)  
 ✅ Fast form scrapers (time trap)  
-✅ Email header injection (sanitization)  
+✅ Email header injection (sanitization of subject and all display-name fields)  
 ✅ CSRF-style attacks (form key)  
 ✅ Timing attacks on form key (constant-time comparison via <a href="https://www.php.net/manual/en/function.hash-equals.php" target="_blank" rel="noopener noreferrer">`hash_equals()`</a>)  
+✅ Math challenge question-picking (index computed server-side when `formKey` is set)  
+✅ Oversized payloads (server-side field length limits)  
 
 ### What It Doesn't Protect Against
 
@@ -523,7 +529,7 @@ Gjallarform is designed for GDPR compliance when properly configured:
 
 Before going live:
 
-- [ ] PHP 8.0+ confirmed
+- [ ] PHP 8.1+ confirmed
 - [ ] Mail server configured (SPF, DKIM)
 - [ ] Mail sending limits set
 - [ ] `$CFG` array filled out

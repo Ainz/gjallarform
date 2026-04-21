@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.93] - 2026-04-21
+
+### Security
+- **HIGH**: Sanitize `$CFG['siteName']`, `$CFG['fromDisplay']`, and `$CFG['replyDisplay']`
+  against CRLF header injection at runtime — these values are now stripped of `\r\n`
+  before any use in email headers, matching the existing treatment of `$subject`
+- **MEDIUM**: Math challenge index is now computed server-side from `formKey` using
+  `get_math_question_index()`, preventing a user from choosing an arbitrary question by
+  posting a custom `math_index`; the client-reported index is only used as a fallback
+  when `formKey` is intentionally left blank
+- **MEDIUM**: Reference IDs now generated via `random_bytes(3)` (CSPRNG) instead of
+  `md5(uniqid('', true))` (microtime-seeded, predictable on many platforms)
+- **LOW**: Added server-side field length limits: name ≤ 200, email ≤ 254 (RFC 5321),
+  subject ≤ 300, message ≤ 10 000 bytes; matching `maxlength` attributes added to
+  example `contact.html`; corresponding field-level validation bubbles added to JS
+
+### Fixed
+- **PHP 8.4 / correctness**: JavaScript `crc32()` was not implementing standard
+  IEEE 802.3 CRC32 and produced different values than PHP's `crc32()` for the same
+  input; replaced with a correct table-based implementation (polynomial 0xEDB88320)
+  and updated `get_math_question_index()` to use `& 0xFFFFFFFF` (unsigned 32-bit mask)
+  to match JavaScript's `>>> 0` — PHP and JS now select identical question indices for
+  any given `formKey`
+- **PHP 8.4 / robustness**: `preg_split()` return value guarded against `false`; a
+  `TypeError` on `false[0]` would otherwise be possible under `strict_types=1`
+- **PHP 8.4 / robustness**: `new DateTimeZone()` wrapped in `try/catch \Exception`
+  — an invalid `$CFG['timezone']` value now silently falls back to `UTC` instead of
+  producing a fatal `DateInvalidTimeZoneException` (PHP 8.3+) or `Exception` (PHP 8.0–8.2)
+
+### Changed
+- `mt_rand()` replaced with `random_int()` in `get_math_question_index()` for the
+  no-formKey fallback path; `random_int()` uses the OS CSPRNG (PHP 7.0+)
+- Minimum documented PHP version raised from 8.0 to 8.1 (PHP 8.0 reached EOL
+  November 2023; the code runs unchanged on PHP 8.1 through 8.4)
+
 ## [0.92] - 2026-01-21
 
 ### About This Release
