@@ -61,7 +61,6 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - All configuration in one place
 - Clean separation of concerns
 - Well-commented code
-- Designed for "future you in 6 months"
 
 ---
 
@@ -111,12 +110,12 @@ $CFG = [
   // Site details
   'siteName'     => 'Your Site',
   'siteUrl'      => 'https://www.yoursite.com',
-  'contactPage'  => 'contact.html',    // Customizable contact form filename
-  'thankYouPage' => 'thankyou.html',   // Customizable thank you page filename
-  'timezone'     => 'Europe/Stockholm',
+  'contactPage'  => 'contact.html',    // Use 'contact' (no extension) for directory-style URLs like /contact/
+  'thankYouPage' => 'thankyou.html',   // Use 'thankyou' (no extension) for directory-style URLs like /thankyou/
+  'timezone'     => 'Your/TimeZone',
 
   // Spam defense
-  'formKey'         => 'yoursite-' . rand(100000, 999999),
+  'formKey'         => 'yoursite-' . rand(100000, 999999), // This can literally be anything, but must match with the form below.
   'timeTrapEnabled' => true,          // Enable time trap (reject instant submissions)
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
@@ -132,7 +131,7 @@ In `contact.html`, change the form action:
 
 Update the form key value to match your PHP config:
 ```html
-<input name="form_key" type="hidden" value="yoursite-123456">
+<input name="form_key" type="hidden" value="yoursite-123456"> // This can literally be anything, but must match with the CFG above.
 ```
 
 **Link the JavaScript**
@@ -141,9 +140,8 @@ Update the form key value to match your PHP config:
 ```
 
 ### 3. Test It
-
-1. Submit the form with valid data → should redirect to thankyou.html page
-2. Fill the hidden "website" field → should redirect to thankyou.html (no email sent)
+1. Submit the form with valid data → should redirect to thank you page
+2. Honeypot test — use browser dev tools to unhide and fill the `website` field, then submit → should redirect to thank you page (no email sent)
 3. Submit too quickly → should bounce back with error (if time trap enabled)
 4. Check your inbox for both admin notification and confirmation copy
 
@@ -291,23 +289,49 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 ### Form Fields
 
-The current implementation expects these fields:
-- `fullname` (or `name`) - Required
-- `email` - Required, validated
-- `subject` - Optional (defaults to site name)
-- `message` - Required
-- `website` - Honeypot (must remain hidden)
+#### Contact Page
 
-**Adding Fields:**
+**User-facing fields:**
+| Field | Required | Notes |
+|-------|----------|-------|
+| `fullname` (or `name`) | Yes | Accepts either field name |
+| `email` | Yes | ASCII only, validated format |
+| `subject` | No | Defaults to site name if omitted |
+| `message` | Yes | |
+| `math_answer` | When enabled | Answer to math challenge question |
+
+**Hidden fields — do not remove:**
+| Field | Set by | Purpose |
+|-------|--------|---------|
+| `website` | User (honeypot) | Must stay hidden via CSS — bots fill it, humans don't |
+| `form_key` | You | Must match PHP config |
+| `site_tag` | You | Informational label |
+| `render_ts` | JavaScript | Page load timestamp for time trap |
+| `math_index` | JavaScript | Math question index |
+
+#### Thank You Page
+
+These element IDs are populated automatically by JavaScript after a successful submission:
+
+| Element ID | Content |
+|------------|---------|
+| `gjallarform-thankyou-root` | Required — triggers rendering |
+| `gjallarform-thankyou-details` | Container, set `hidden` by default |
+| `gjallarform-thankyou-name` | Submitter's first name |
+| `gjallarform-thankyou-subject` | Message subject |
+| `gjallarform-thankyou-ref` | Server-generated reference ID |
+
+#### Adding Fields
 You'll need to modify:
 1. HTML form markup
 2. PHP input reading (`$_POST`)
 3. PHP validation logic
 4. Email body composition
 
-**Removing Fields:**
-- `subject` can be removed (will default to site name)
-- Don't remove `fullname`, `email`, or `message` without adjusting validation
+#### Removing Fields
+- `subject` can be removed (will default to site name if omitted)
+- Don't remove `fullname`, `email`, or `message` without adjusting PHP validation
+- Don't remove any hidden fields without understanding their role above
 
 ### Page Filenames
 
@@ -316,8 +340,8 @@ By default, Gjallarform expects `contact.html` and `thankyou.html` at your site 
 ```php
 $CFG = [
   // ...
-  'contactPage'  => 'forms/contact.html',    // Use subdirectory
-  'thankYouPage' => 'forms/success.html',    // Custom filename
+  'contactPage'  => 'forms/contact.html',    // Use subdirectory or change for directory-style URLs like /contact/ . No slashes if using directory.
+  'thankYouPage' => 'forms/success.html',    // Custom filename or chnage for directory-style URLs like /success/. No slashes if using directory.
   // ...
 ];
 ```
@@ -326,6 +350,8 @@ $CFG = [
 - `'contact.html'` → redirects to `https://yoursite.com/contact.html`
 - `'forms/contact.html'` → redirects to `https://yoursite.com/forms/contact.html`
 - `'get-in-touch.html'` → redirects to `https://yoursite.com/get-in-touch.html`
+- `'contact'` → redirects to `https://yoursite.com/contact` (web server handles trailing slash)
+- `'contact/success'` → redirects to `https://yoursite.com/contact/success`  (web server handles trailing slash)
 
 The leading slash is handled automatically, so you can use either `contact.html` or `/contact.html`.
 
@@ -431,7 +457,7 @@ If legitimate users are getting "too fast" errors:
 ### Form Redirects to Wrong Page
 
 1. Verify `$CFG['siteUrl']` is set correctly
-2. Check that `thankyou.html` exists at root
+2. Check that `thankyou.html` or its equivalent exists at root
 3. Check `.htaccess` rules (if using Apache)
 
 ---
