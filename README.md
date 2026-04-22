@@ -355,6 +355,16 @@ $CFG = [
 
 The leading slash is handled automatically, so you can use either `contact.html` or `/contact.html`.
 
+**If your site uses directory-based URLs** (e.g. `/contact/` instead of `contact.html`),
+use just the directory name without slashes:
+
+```php
+'contactPage'  => 'contact',   // → https://yoursite.com/contact/
+'thankYouPage' => 'thankyou',  // → https://yoursite.com/thankyou/
+```
+
+The trailing slash is handled automatically by your web server.
+
 ### Styling
 
 CSS is injected by `gjallarform.js`. To customize:
