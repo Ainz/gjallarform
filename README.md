@@ -341,7 +341,7 @@ By default, Gjallarform expects `contact.html` and `thankyou.html` at your site 
 $CFG = [
   // ...
   'contactPage'  => 'forms/contact.html',    // Use subdirectory or change for directory-style URLs like /contact/ . No slashes if using directory.
-  'thankYouPage' => 'forms/success.html',    // Custom filename or chnage for directory-style URLs like /success/. No slashes if using directory.
+  'thankYouPage' => 'forms/success.html',    // Custom filename or change for directory-style URLs like /success/. No slashes if using directory.
   // ...
 ];
 ```
