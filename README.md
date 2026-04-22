@@ -18,10 +18,10 @@ Perfect for personal sites, portfolios, and small business pages running on shar
   - [Prerequisites](#1-prerequisites)
   - [Installation](#2-installation)
   - [Test It](#3-test-it)
-- [Defense Tiers Explained](#defense-tiers-explained)
-  - [Basic](#basic-recommended-for-most-users)
-  - [Standard](#standard-default)
-  - [Strict](#strict-future)
+- [Spam Defense Features](#spam-defense-features)
+  - [Honeypot](#honeypot-always-active)
+  - [Time Trap](#time-trap-optional)
+  - [Math Challenge](#math-challenge-optional)
 - [Form Flow](#form-flow)
 - [Configuration Reference](#configuration-reference)
 - [Customization](#customization)
@@ -50,7 +50,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - Minimal server resources
 
 **Security Without Complexity**
-- Tiered defense system (choose your protection level)
+- Layered spam defenses (honeypot, time trap, math challenge)
 - Honeypot bot filtering (primary defense)
 - Optional time trap for automated submissions
 - Optional math challenge for manual spam operators
@@ -115,12 +115,12 @@ $CFG = [
   'thankYouPage' => 'thankyou.html',   // Customizable thank you page filename
   'timezone'     => 'Europe/Stockholm',
 
-  // Defense level
-  'defenseLevel'    => 'standard',  // 'basic', 'standard', or 'strict'
+  // Spam defense
   'formKey'         => 'yoursite-' . rand(100000, 999999),
+  'timeTrapEnabled' => true,          // Enable time trap (reject instant submissions)
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
-  'math_challenge'  => true,        // Enable simple math verification question
+  'math_challenge'  => true,          // Enable math verification question
 ];
 ```
 
@@ -149,56 +149,41 @@ Update the form key value to match your PHP config:
 
 ---
 
-## Defense Tiers Explained
+## Spam Defense Features
 
-Choose your protection level based on your site's traffic and risk profile.
+Gjallarform uses layered spam defenses that you can enable or disable individually. All sites get the honeypot and validation baseline; the time trap and math challenge are opt-in.
 
-### Basic (Recommended for Most Users)
+### Honeypot (Always Active)
+
+A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent. (<a href="https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions" target="_blank" rel="noopener noreferrer">What's a honeypot?</a>)
+
+Combined with server-side mail limits, the honeypot stops 95%+ of automated spam. Simple, effective, no false positives. Also always active: email validation, required field checks, and field length limits.
+
+### Time Trap (Optional)
+
 ```php
-'defenseLevel' => 'basic',
+'timeTrapEnabled' => true,   // Enable/disable
+'timeTrapMinMs'   => 2000,   // Minimum time before submission (ms)
+'timeTrapGraceMs' => 50,     // Jitter allowance (ms)
 ```
 
-**What you get:**
-- **Honeypot field** (<a href="https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions" target="_blank" rel="noopener noreferrer">what's a honeypot?</a>) - A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent.
-- Email validation
-- Required field checks
+Measures how long between page load and form submission. Requires at least 2 seconds (configurable), which catches bots that fill forms instantly but doesn't affect legitimate users who need time to type. Gracefully degrades if JavaScript is disabled.
 
-**Best for:**
-- Personal blogs
-- Portfolio sites
-- Low-traffic pages
-- Sites with mail server limits in place
+### Math Challenge (Optional)
 
-**Why it's enough:** Combined with server-side mail limits, the honeypot stops 95%+ of automated spam. Simple, effective, no false positives.
-
-### Standard (Default)
 ```php
-'defenseLevel' => 'standard',
+'math_challenge' => true,    // Enable/disable
 ```
 
-**Adds to Basic:**
-- **Time trap** - Measures how long between page load and form submission. Requires at least 2 seconds (configurable), which catches bots that fill forms instantly but doesn't affect legitimate users who need time to type.
-- **Math challenge** - Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users. Question selection is deterministic based on form key for consistency.
-- Gracefully degrades if JavaScript disabled
+Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users. Question selection is deterministic based on form key for consistency.
 
-**Best for:**
-- Small business sites
-- Sites expecting moderate traffic
-- When you want an extra layer without complexity
-- Protection against both automated bots and manual spam operators
+### Recommended Combinations
 
-**Trade-off:** Adds minimal friction for legitimate users, stops bots that bypass the honeypot and manual spam operators.
-
-### Strict (Future) — Not currently implemented
-```php
-'defenseLevel' => 'strict',
-```
-
-**Will add:**
-- Rate limiting by IP address
-- Requires file/cache storage
-
-**Status:** Planned for later version. Not implemented in current release.
+| Use Case | Honeypot | Time Trap | Math Challenge |
+|----------|----------|-----------|----------------|
+| Personal blog, portfolio | Always on | Off | Off |
+| Small business site | Always on | On | Off |
+| Higher-traffic or spam-targeted site | Always on | On | On |
 
 ---
 
@@ -226,7 +211,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 4. **PHP Processing**
    - Honeypot check (silent success if triggered)
    - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site (<a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener noreferrer">CSRF protection</a>)
-   - Time trap check (if standard/strict tier)
+   - Time trap check (if enabled)
    - Field validation (presence, format, length)
    - Email composition (admin + confirmation)
    - Mail sending via PHP `mail()`
@@ -279,7 +264,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 | `thankYouPage` | `thankyou.html` | Thank you page filename/path |
 | `timezone` | `UTC` | Timezone for timestamps |
 | `formKey` | `''` (disabled) | CSRF-like token |
-| `defenseLevel` | `standard` | `basic`/`standard`/`strict` |
+| `timeTrapEnabled` | `true` | Enable/disable time trap |
 | `timeTrapMinMs` | `2000` | Minimum submit time (ms) |
 | `timeTrapGraceMs` | `50` | Jitter allowance (ms) |
 | `math_challenge` | `true` | Enable math verification question |
@@ -431,9 +416,9 @@ If legitimate users are getting "too fast" errors:
 'timeTrapGraceMs' => 200,  // More lenient
 ```
 
-**Option 3:** Switch to basic tier
+**Option 3:** Disable the time trap
 ```php
-'defenseLevel' => 'basic',  // Disable time trap entirely
+'timeTrapEnabled' => false,  // Disable time trap entirely
 ```
 
 ### JavaScript Not Loading
@@ -575,12 +560,13 @@ This is a personal project released for public use.
 
 ## Roadmap
 
-See [CHANGELOG.md](CHANGELOG.md) for planned features.
+See [CHANGELOG.md](CHANGELOG.md) for version history.
 
-**Upcoming:**
-- Form-agnostic pattern matching (1.x)
-- Rate limiting module (strict tier)
-- Internationalization support
+**Looking Forward:**
+- **Defense tiers** — a single `defenseLevel` setting (`basic`/`standard`/`strict`) that auto-configures spam defense features as a group
+- **Rate limiting** — IP-based throttling for high-traffic sites (requires file/cache storage)
+- **Form-agnostic pattern matching** — work with any form structure
+- **Internationalization** — localized error messages and email templates
 
 **Under Consideration:**
 - Database logging option
