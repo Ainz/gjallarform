@@ -1,4 +1,4 @@
-<img width="800" alt="Gjallarform logo" src="https://github.com/Ainz/gjallarform/blob/main/assets/gjallarfrom-large.beta-text-allgold.png" />
+<img width="600" alt="Gjallarform logo" src="https://github.com/Ainz/gjallarform/blob/main/assets/gjallarfrom-large.beta-text-allgold.png" />
 
 # Gjallarform
 
