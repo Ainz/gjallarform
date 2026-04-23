@@ -1,4 +1,4 @@
-<img width="800" height="" alt="image" src="https://github.com/user-attachments/assets/39001114-08cf-4540-9fb6-705be251a8d2" />
+<img width="800" alt="Gjallarform logo" src="./assets/gjallarform-large.png" />
 
 # Gjallarform
 
