@@ -75,8 +75,8 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 :warning: **Mail Server Setup  (Critical)**
 Before deploying, configure your mail server:
-- **SPF records** for your domain (<a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank" rel="noopener noreferrer">what's SPF?</a>)
-- **DKIM signing** enabled (<a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" target="_blank" rel="noopener noreferrer">what's DKIM?</a>)
+- **SPF records** for your domain ( <a href="https://en.wikipedia.org/wiki/Sender_Policy_Framework" target="_blank" rel="noopener noreferrer">what's SPF?</a> )
+- **DKIM signing** enabled ( <a href="https://en.wikipedia.org/wiki/DomainKeys_Identified_Mail" target="_blank" rel="noopener noreferrer">what's DKIM?</a> )
 - Configure a sending limit (recommended: 50 emails/day minimum)
 - Create a dedicated email address for form submissions (e.g., `form-engine@yourdomain.com`)
 
@@ -115,7 +115,7 @@ $CFG = [
   'timezone'     => 'Your/TimeZone',
 
   // Spam defense
-  'formKey'         => 'yoursite-' . rand(100000, 999999), // This can literally be anything, but must match with the form below.
+  'formKey'         => 'yoursite-' . rand(100000, 999999), // This can literally be anything, must match with form below.
   'timeTrapEnabled' => true,          // Enable time trap (reject instant submissions)
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
@@ -131,7 +131,7 @@ In `contact.html`, change the form action:
 
 Update the form key value to match your PHP config:
 ```html
-<input name="form_key" type="hidden" value="yoursite-123456"> // This can literally be anything, but must match with the CFG above.
+<input name="form_key" type="hidden" value="yoursite-123456"> // This can literally be anything, must match the CFG above.
 ```
 
 **Link the JavaScript**
@@ -153,7 +153,7 @@ Gjallarform uses layered spam defenses that you can enable or disable individual
 
 ### Honeypot (Always Active)
 
-A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent. (<a href="https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions" target="_blank" rel="noopener noreferrer">What's a honeypot?</a>)
+A hidden form field that legitimate users never see or fill out, but bots often do automatically. When triggered, the form appears to succeed but no email is sent. ( <a href="https://en.wikipedia.org/wiki/Honeypot_(computing)#Spam_versions" target="_blank" rel="noopener noreferrer">What's a honeypot?</a> )
 
 Combined with server-side mail limits, the honeypot stops 95%+ of automated spam. Simple, effective, no false positives. Also always active: email validation, required field checks, and field length limits.
 
@@ -208,7 +208,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 4. **PHP Processing**
    - Honeypot check (silent success if triggered)
-   - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site (<a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener noreferrer">CSRF protection</a>)
+   - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site ( <a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener noreferrer">CSRF protection</a> )
    - Time trap check (if enabled)
    - Field validation (presence, format, length)
    - Email composition (admin + confirmation)
@@ -480,7 +480,7 @@ If legitimate users are getting "too fast" errors:
 ✅ Fast form scrapers (time trap)  
 ✅ Email header injection (sanitization of subject and all display-name fields)  
 ✅ CSRF-style attacks (form key)  
-✅ Timing attacks on form key (constant-time comparison via <a href="https://www.php.net/manual/en/function.hash-equals.php" target="_blank" rel="noopener noreferrer">`hash_equals()`</a>)  
+✅ Timing attacks on form key ( constant-time comparison via <a href="https://www.php.net/manual/en/function.hash-equals.php" target="_blank" rel="noopener noreferrer">`hash_equals()`</a> )  
 ✅ Math challenge question-picking (index computed server-side when `formKey` is set)  
 ✅ Oversized payloads (server-side field length limits)  
 
