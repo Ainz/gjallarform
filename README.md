@@ -70,7 +70,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 **Server Requirements**
 - PHP 8.2 or higher
-- PHP `mail()` function enabled *(Most shared hosting providers enable mail() by default. Check your control panel under PHP settings or Email, or contact your host if unsure. You can also verify by creating a one-line PHP file: <?php phpinfo(); ?> — search for "sendmail" in the output.)*
+- PHP `mail()` function enabled *(Most shared hosting providers enable mail() by default. Check your control panel under PHP settings or Email, or contact your host if unsure. You can also verify by creating a one-line PHP file: `<?php phpinfo(); ?>` — search for "sendmail" in the output.)*
 - Write access to upload files
 
 :warning: **Mail Server Setup  (Critical)**
