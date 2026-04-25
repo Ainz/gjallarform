@@ -1,5 +1,4 @@
-<img width="600" alt="Gjallarform logo" src="https://github.com/Ainz/gjallarform/blob/main/assets/gjallarfrom-large.png" />
-
+<img src="https://github.com/Ainz/gjallarform/blob/main/assets/gjallarfrom-large.png" alt="Gjallarform logo" title="Gjallarform Logo" width="200" align="right" />
 # Gjallarform
 
 **A minimal, secure contact form for PHP shared hosting**
