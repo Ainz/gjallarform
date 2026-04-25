@@ -56,9 +56,11 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - Email header injection protection
 
 **Maintainable by Design**
-- All configuration in one place
-- Clean separation of concerns
-- Well-commented code
+
+- All configuration in one contained $CFG array — no hunting through code
+- Four files, self-contained — drop them in and they work
+- CSS bundled into the JavaScript — one fewer file to manage
+- Commented throughout — no guessing what a setting does
 
 ---
 
