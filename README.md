@@ -69,8 +69,8 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 ### 1. Prerequisites
 
 **Server Requirements**
-- PHP 8.1 or higher
-- PHP `mail()` function enabled
+- PHP 8.2 or higher
+- PHP `mail()` function enabled *(Most shared hosting providers enable mail() by default. Check your control panel under PHP settings or Email, or contact your host if unsure. You can also verify by creating a one-line PHP file: <?php phpinfo(); ?> — search for "sendmail" in the output.)*
 - Write access to upload files
 
 :warning: **Mail Server Setup  (Critical)**
