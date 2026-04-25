@@ -13,7 +13,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 - [Name Origin](#name-origin)
 - [Why Gjallarform?](#why-gjallarform)
-- [Quick Start](#quick-start)
+- [Start configuration](#start-configuration)
   - [Prerequisites](#1-prerequisites)
   - [Installation](#2-installation)
   - [Test It](#3-test-it)
@@ -54,7 +54,6 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 - Optional time trap for automated submissions
 - Optional math challenge for manual spam operators
 - Email header injection protection
-- Graceful degradation for edge cases
 
 **Maintainable by Design**
 - All configuration in one place
@@ -63,7 +62,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 ---
 
-## Quick Start
+## Start configuration
 
 ### 1. Prerequisites
 
