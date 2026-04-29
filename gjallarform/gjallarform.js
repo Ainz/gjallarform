@@ -11,6 +11,34 @@
 
 (function () {
     // ---------------------------------------------------------------------------
+    // Minimal CSS (Publii-safe <style>)
+    // ---------------------------------------------------------------------------
+var CSS = `
+.gjallarform-wrapper{container-type:inline-size;container-name:gjallarformwrapper}
+.gjallarform-wrapper,.gjallarform{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
+.gjallarform{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
+.gjallarform__span-2{grid-column:1 / -1}
+.gjallarform label{display:block;font-weight:700;margin-bottom:.4rem}
+.gjallarform input,.gjallarform textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
+.gjallarform input:focus,.gjallarform textarea:focus{outline:2px solid rgba(0,108,255,.2);border-color:#6aa3ff}
+.gjallarform__actions{margin-top:.5rem}
+.gjallarform button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
+.hp{position:absolute;left:-500vw;top:-500vh;height:0;width:0;overflow:hidden}
+@media (max-width:768px){.gjallarform{grid-template-columns:1fr}}
+@container gjallarformwrapper (max-width:600px){.gjallarform{grid-template-columns:1fr}}
+`;
+    if (!document.getElementById('gjallarform-style')) {
+        var st = document.createElement('style');
+        st.id = 'gjallarform-style';
+        st.textContent = CSS;
+        document.head.appendChild(st);
+    }
+
+    // ---------------------------------------------------------------------------
+    // No changes are normally needed below this line
+    // ---------------------------------------------------------------------------
+
+    // ---------------------------------------------------------------------------
     // Small helpers
     // ---------------------------------------------------------------------------
     /**
@@ -136,30 +164,6 @@
      * @returns {boolean} True if the error code is in the URL, false otherwise
      */
     function hasErrCode(code) { return new RegExp('[?&]err=' + code + '(?:&|$)').test(location.search); }
-
-    // ---------------------------------------------------------------------------
-    // Minimal CSS (Publii-safe <style>)
-    // ---------------------------------------------------------------------------
-var CSS = `
-.gjallarform-wrapper{container-type:inline-size;container-name:gjallarformwrapper}
-.gjallarform-wrapper,.gjallarform{width:100%;max-width:100%;margin-left:auto;margin-right:auto;box-sizing:border-box}
-.gjallarform{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:1.25rem 2rem;margin:1rem 0 2rem}
-.gjallarform__span-2{grid-column:1 / -1}
-.gjallarform label{display:block;font-weight:700;margin-bottom:.4rem}
-.gjallarform input,.gjallarform textarea{width:100%;padding:.8rem 1rem;border:1px solid #cfcfcf;border-radius:.6rem;font:inherit;line-height:1.4;background:#fff;box-sizing:border-box}
-.gjallarform input:focus,.gjallarform textarea:focus{outline:2px solid rgba(0,108,255,.2);border-color:#6aa3ff}
-.gjallarform__actions{margin-top:.5rem}
-.gjallarform button{padding:.8rem 1.5rem;border:0;border-radius:.75rem;cursor:pointer}
-.hp{position:absolute;left:-500vw;top:-500vh;height:0;width:0;overflow:hidden}
-@media (max-width:768px){.gjallarform{grid-template-columns:1fr}}
-@container gjallarformwrapper (max-width:600px){.gjallarform{grid-template-columns:1fr}}
-`;
-    if (!document.getElementById('gjallarform-style')) {
-        var st = document.createElement('style');
-        st.id = 'gjallarform-style';
-        st.textContent = CSS;
-        document.head.appendChild(st);
-    }
 
     // ---------------------------------------------------------------------------
     // sessionStorage keys + helpers
