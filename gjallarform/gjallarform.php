@@ -41,6 +41,19 @@ $CFG = [
 ];
 
 # ============================================================================
+# MATH CHALLENGE QUESTIONS — any edit here must be mirrored in gjallarform.js
+# ============================================================================
+$math_questions = [
+  ['question' => 'What is 5 + 3?', 'answer' => '8'],
+  ['question' => 'What is 10 - 4?', 'answer' => '6'],
+  ['question' => 'What is 6 × 2?', 'answer' => '12'],
+  ['question' => 'What is 15 ÷ 3?', 'answer' => '5'],
+  ['question' => 'What is 7 + 8?', 'answer' => '15'],
+  ['question' => 'What is 20 - 11?', 'answer' => '9'],
+  ['question' => 'What is 4 × 3?', 'answer' => '12'],
+];
+
+# ============================================================================
 # EMERGENCY KILL SWITCH CHECK
 # ============================================================================
 if ($CFG['form_disabled'] ?? false) {
@@ -49,7 +62,7 @@ if ($CFG['form_disabled'] ?? false) {
 }
 
 # ============================================================================
-# DO NOT EDIT BELOW THIS LINE
+# No changes are normally needed below this line
 # ============================================================================
 
 /** Fail fast on non-POST */
@@ -61,13 +74,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST') {
 /** Base URL helpers (thank-you + back URLs derived from config) */
 
 /**
- * Detects the HTTP scheme (http or https) for the current request.
+ * Returns the HTTP scheme for URL construction.
  *
- * Checks if HTTPS is enabled via the $_SERVER['HTTPS'] variable. If HTTPS is
- * detected and not 'off', returns 'https'. Otherwise, defaults to 'https' as
- * the safest option for public-facing forms to avoid mixed-content warnings.
+ * Always returns 'https'. The conditional on $_SERVER['HTTPS'] is retained for
+ * explicitness but both branches produce 'https' — public-facing forms are
+ * always served over HTTPS to avoid mixed-content warnings.
  *
- * @return string Either 'https' (always https for maximum security)
+ * @return string Always 'https'
  */
 function detect_scheme(): string {
   if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') return 'https';
@@ -100,8 +113,9 @@ function compute_base_url(array $CFG): string {
 $BASE_URL = compute_base_url($CFG);
 
 // Strip CR/LF from every $CFG value that will appear in an email header.
-// $subject gets the same treatment later (line ~264); doing these here ensures
-// siteName, fromDisplay, and replyDisplay are clean before any use downstream.
+// $subject gets the same treatment later (see subject sanitization below);
+// doing these here ensures siteName, fromDisplay, and replyDisplay are clean
+// before any use downstream.
 foreach (['siteName', 'fromDisplay', 'replyDisplay'] as $_hdrKey) {
   if (isset($CFG[$_hdrKey])) {
     $CFG[$_hdrKey] = preg_replace('/[\r\n]+/', ' ', $CFG[$_hdrKey]);
@@ -186,17 +200,6 @@ $website  = trim((string)($_POST['website']  ?? ''));  // honeypot
 $key      = trim((string)($_POST['form_key'] ?? ''));
 $rts      = (int)($_POST['render_ts'] ?? 0);
 $math_answer = trim((string)($_POST['math_answer'] ?? ''));
-
-/** Math challenge questions (simple arithmetic) */
-$math_questions = [
-  ['question' => 'What is 5 + 3?', 'answer' => '8'],
-  ['question' => 'What is 10 - 4?', 'answer' => '6'],
-  ['question' => 'What is 6 × 2?', 'answer' => '12'],
-  ['question' => 'What is 15 ÷ 3?', 'answer' => '5'],
-  ['question' => 'What is 7 + 8?', 'answer' => '15'],
-  ['question' => 'What is 20 - 11?', 'answer' => '9'],
-  ['question' => 'What is 4 × 3?', 'answer' => '12'],
-];
 
 /**
  * Selects a math question index deterministically from the form key.
@@ -353,6 +356,7 @@ $confirmHeaders[] = 'MIME-Version: 1.0';
 $confirmHeaders[] = 'Content-Type: text/plain; charset=UTF-8';
 $confirmHeaders[] = 'From: ' . $CFG['fromDisplay'] . ' <' . $CFG['from'] . '>';
 $confirmHeaders[] = 'Reply-To: ' . $CFG['replyDisplay'] . ' <' . $CFG['to'] . '>'; // replies to site inbox
+// Prevent auto-responders (vacation replies, mailing lists) from looping back.
 $confirmHeaders[] = 'Auto-Submitted: auto-replied';
 $confirmHeaders[] = 'Precedence: auto-reply';
 $confirmHeaders[] = 'X-Auto-Response-Suppress: All';
