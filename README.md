@@ -245,6 +245,11 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 ## Configuration Reference
 
+> [!WARNING]
+> **`form_disabled` is set to `true` by default.**
+> The form will silently reject all submissions until you change this.
+> Open `gjallarform.php` and set `'form_disabled' => false` before going live.
+
 ### Required Settings
 
 | Setting | Purpose | Example |
@@ -266,6 +271,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 | `timeTrapMinMs` | `2000` | Minimum submit time (ms) |
 | `timeTrapGraceMs` | `50` | Jitter allowance (ms) |
 | `math_challenge` | `true` | Enable math verification question |
+| `form_disabled` | **`true`** | **Master kill-switch — set to `false` to accept submissions** |
 
 ### Email Addresses Explained
 
@@ -550,6 +556,7 @@ Gjallarform is designed for GDPR compliance when properly configured:
 
 Before going live:
 
+- [ ] **`form_disabled` set to `false`** (ships as `true` — form rejects all submissions until changed)
 - [ ] PHP 8.1+ confirmed
 - [ ] Mail server configured (SPF, DKIM)
 - [ ] Mail sending limits set
