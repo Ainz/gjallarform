@@ -100,6 +100,7 @@ your-site/
 ```
 
 **Configure gjallarform.php**
+
 Open `gjallarform/gjallarform.php` and edit only the `$CFG` array:
 
 ```php
@@ -117,8 +118,8 @@ $CFG = [
   'siteName'    => 'Your Site',
   'siteUrl'     => 'https://www.yoursite.com',   // Leave '' to auto-detect from httpHost
   'httpHost'    => 'www.yoursite.com',            // Fallback host used only when siteUrl is blank
-  'contactPage' => '/gjallarform/contact.html',
-  'thankYouPage'=> '/gjallarform/thankyou.html',
+  'contactPage' => 'contact.html',              // Assuming all files are in the same default directory
+  'thankYouPage'=> 'thankyou.html',             // Assuming all files are in the same default directory
   'timezone'    => 'Your/TimeZone',
 
   // Spam defense
