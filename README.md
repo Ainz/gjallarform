@@ -104,25 +104,29 @@ Open `gjallarform/gjallarform.php` and edit only the `$CFG` array:
 
 ```php
 $CFG = [
+  // Kill switch — set to false before going live
+  'form_disabled' => true,
+
   // Mail routing
   'to'          => 'you@yourdomain.com',        // Where submissions go
   'from'        => 'form-engine@yourdomain.com', // MUST be on your domain, can be same as 'to'
-  'fromDisplay' => 'Your Site Contact Form',
-  'replyDisplay'=> 'Your Site',
+  'fromDisplay' => 'Your Site Contact Form',     // Display name in From: header
+  'replyDisplay'=> 'Your Site',                  // Display name in Reply-To: header
 
   // Site details
-  'siteName'     => 'Your Site',
-  'siteUrl'      => 'https://www.yoursite.com',
-  'contactPage'  => 'gjallarform/contact.html',
-  'thankYouPage' => 'gjallarform/thankyou.html',
-  'timezone'     => 'Your/TimeZone',
+  'siteName'    => 'Your Site',
+  'siteUrl'     => 'https://www.yoursite.com',   // Leave '' to auto-detect from httpHost
+  'httpHost'    => 'www.yoursite.com',            // Fallback host used only when siteUrl is blank
+  'contactPage' => 'gjallarform/contact.html',
+  'thankYouPage'=> 'gjallarform/thankyou.html',
+  'timezone'    => 'Your/TimeZone',
 
   // Spam defense
-  'formKey'         => 'yoursite-change-this-to-a-long-random-secret', // Fixed secret string — must match the hidden form_key field in HTML. Keep private.
-  'timeTrapEnabled' => true,          // Enable time trap (reject instant submissions)
+  'formKey'         => 'yoursite-change-this-to-a-long-random-secret', // Fixed secret — must match hidden form_key field in HTML
+  'timeTrapEnabled' => true,          // Reject submissions faster than timeTrapMinMs
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
-  'math_challenge'  => true,          // Enable math verification question
+  'math_challenge'  => true,          // Enable arithmetic challenge question
 ];
 ```
 
