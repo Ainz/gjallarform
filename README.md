@@ -261,44 +261,41 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 > The form will silently reject all submissions until you change this.
 > Open `gjallarform.php` and set `'form_disabled' => false` before going live.
 
-### Required Settings
+### Kill Switch
 
-| Setting | Purpose | Example |
-|---------|---------|---------|
-| `to` | Where submissions are sent | `admin@yoursite.com` |
-| `from` | Envelope sender (must be on your domain) | `form@yoursite.com` |
-| `siteName` | Used in email subjects | `My Site` |
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `form_disabled` | `true` | Set to `false` to accept live submissions. Shipped as `true` so the form is safe to deploy before configuration is complete. When `true`, every POST request returns a 503 and exits immediately — no email is sent, no error is shown to the visitor. |
 
-### Optional Settings
+### Mail Routing
 
-| Setting | Default | Purpose |
-|---------|---------|---------|
-| `siteUrl` | Auto-detected | Base URL for redirects |
-| `contactPage` | `contact.html` | Contact form page filename/path (e.g. `gjallarform/contact.html`) |
-| `thankYouPage` | `thankyou.html` | Thank you page filename/path (e.g. `gjallarform/thankyou.html`) |
-| `timezone` | `UTC` | Timezone for timestamps |
-| `formKey` | `''` (disabled) | CSRF-like token |
-| `timeTrapEnabled` | `true` | Enable/disable time trap |
-| `timeTrapMinMs` | `2000` | Minimum submit time (ms) |
-| `timeTrapGraceMs` | `50` | Jitter allowance (ms) |
-| `math_challenge` | `true` | Enable math verification question |
-| `form_disabled` | **`true`** | **Master kill-switch — set to `false` to accept submissions** |
+| Setting | Required | Default | Notes |
+|---------|----------|---------|-------|
+| `to` | Yes | — | The address that receives submission notification emails. Can be any address (your own domain, Gmail, etc.). |
+| `from` | Yes | — | Envelope sender. **Must be an address on your own domain** (e.g. `form-engine@yourdomain.com`) for SPF/DKIM to pass. This is not the address visitors reply to — see `to` for that. |
+| `fromDisplay` | No | `''` | Display name shown in the `From:` header of outgoing emails (e.g. `YourSite Contact Form`). Purely cosmetic — has no effect on deliverability. |
+| `replyDisplay` | No | `''` | Display name for the `Reply-To:` header in admin notification emails. Purely cosmetic. |
 
-### Email Addresses Explained
+### Site Identity
 
-**`from` Address**
-- **MUST** be on your domain for SPF/DKIM to work
-- Used as envelope sender (`-f` flag)
-- Doesn't need to be a real mailbox (but can be)
-- Example: `noreply@yourdomain.com` or `form-engine@yourdomain.com`
+| Setting | Required | Default | Notes |
+|---------|----------|---------|-------|
+| `siteName` | Yes | — | Used in email subjects and labels (e.g. produces subjects like `YourSite Contact`). |
+| `siteUrl` | No | Auto-detected | Full base URL including scheme (e.g. `https://www.yoursite.com`). Used to build redirect URLs after submission. If blank, falls back to `httpHost` with an auto-detected scheme. Setting this explicitly is safer and recommended. |
+| `httpHost` | No | Auto-detected | Fallback hostname (e.g. `www.yoursite.com`) used only when `siteUrl` is blank. Unlike `$_SERVER['HTTP_HOST']`, this value is never taken from the request — it must be set here explicitly, which prevents host-header injection. Has no effect when `siteUrl` is set. |
+| `contactPage` | No | `contact.html` | Path to the contact form page relative to site root (e.g. `gjallarform/contact.html`). Used as the destination for error redirects. |
+| `thankYouPage` | No | `thankyou.html` | Path to the thank-you page relative to site root (e.g. `gjallarform/thankyou.html`). Used as the destination for the success redirect. |
+| `timezone` | No | `UTC` | PHP timezone string (e.g. `Europe/Rome`). Affects only the timestamp shown in notification emails. Has no effect on form behaviour or validation. |
 
-**`to` Address**
-- Where you actually want to receive submissions
-- Can be on any domain (Gmail, etc.)
-- Used as `Reply-To:` in confirmation emails
-- Example: `you@gmail.com` or `contact@yourdomain.com`
+### Spam Defense
 
-**Why this matters:** Mail servers check SPF/DKIM against the envelope sender, not the recipient. Using a `from` address on your domain significantly improves deliverability.
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `formKey` | `''` (disabled) | A fixed secret string shared between this config and the hidden `form_key` field in `contact.html`. Submissions with a missing or mismatched key are rejected — this is the CSRF-like protection layer. Must be identical and static in both places; never generate it dynamically. Leave blank (`''`) to disable this check entirely. |
+| `timeTrapEnabled` | `true` | Enables the time trap. When on, submissions arriving faster than `timeTrapMinMs` milliseconds after page load are rejected. Disable if users frequently use autofill or paste pre-typed messages and trigger false positives. |
+| `timeTrapMinMs` | `2000` | Minimum milliseconds between page load and submission. 2000 ms (2 seconds) stops bots that submit instantly. Raise to 3000–5000 if you see false positives from fast autofill users. |
+| `timeTrapGraceMs` | `50` | Jitter allowance added to `timeTrapMinMs` to absorb minor clock differences between browser and server. Rarely needs changing. |
+| `math_challenge` | `true` | Enables the arithmetic math challenge. The question is drawn from a pool of 15 and is seeded from `formKey` + your domain, so the same question always appears on your site but differs across installations. Disable if you prefer a frictionless form and rely on the honeypot and time trap alone. |
 
 ---
 

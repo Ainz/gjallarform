@@ -31,10 +31,10 @@ $CFG = [
   'timezone'    => 'UTC',                       // Used for timestamps in receipts
   'formKey'     => 'yoursite-change-this-to-a-long-random-secret', // Fixed secret string — must match the hidden form_key field in HTML. Keep private. ('' disables)
   
-  // Locale / anti-abuse by time limitations and submissions per time
-'timeTrapEnabled' => true,   // turn the time-trap on/off
-'timeTrapMinMs'   => 2000,   // minimum render→submit time in milliseconds
-'timeTrapGraceMs' => 50,     // optional jitter allowance to avoid edge false-positives
+  // Time trap (anti-abuse by submission speed)
+  'timeTrapEnabled' => true,   // turn the time-trap on/off
+  'timeTrapMinMs'   => 2000,   // minimum render→submit time in milliseconds
+  'timeTrapGraceMs' => 50,     // optional jitter allowance to avoid edge false-positives
 
   // Math challenge (Standard tier spam defense)
   'math_challenge' => true,    // Enable simple math verification question
