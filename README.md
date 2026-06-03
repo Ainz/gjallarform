@@ -87,13 +87,16 @@ Before deploying, configure your mail server:
 ### 2. Installation
 
 **Upload Files**
+
+The `gjallarform/` directory is the self-contained deployable package — upload it as-is to your site root:
+
 ```
 your-site/
-├── gjallarform/
-│   ├── gjallarform.php
-│   └── gjallarform.js
-├── contact.html
-└── thankyou.html
+└── gjallarform/
+    ├── gjallarform.php
+    ├── gjallarform.js
+    ├── contact.html
+    └── thankyou.html
 ```
 
 **Configure gjallarform.php**
@@ -110,8 +113,8 @@ $CFG = [
   // Site details
   'siteName'     => 'Your Site',
   'siteUrl'      => 'https://www.yoursite.com',
-  'contactPage'  => 'contact.html',    // Use 'contact' (no extension) for directory-style URLs like /contact/
-  'thankYouPage' => 'thankyou.html',   // Use 'thankyou' (no extension) for directory-style URLs like /thankyou/
+  'contactPage'  => 'gjallarform/contact.html',
+  'thankYouPage' => 'gjallarform/thankyou.html',
   'timezone'     => 'Your/TimeZone',
 
   // Spam defense
@@ -124,7 +127,7 @@ $CFG = [
 ```
 
 **Update HTML Form**
-In `contact.html`, change the form action:
+In `gjallarform/contact.html`, change the form action:
 ```html
 <form class="gjallarform" action="https://www.yoursite.com/gjallarform/gjallarform.php" method="POST">
 ```
@@ -271,8 +274,8 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 | Setting | Default | Purpose |
 |---------|---------|---------|
 | `siteUrl` | Auto-detected | Base URL for redirects |
-| `contactPage` | `contact.html` | Contact form page filename/path |
-| `thankYouPage` | `thankyou.html` | Thank you page filename/path |
+| `contactPage` | `contact.html` | Contact form page filename/path (e.g. `gjallarform/contact.html`) |
+| `thankYouPage` | `thankyou.html` | Thank you page filename/path (e.g. `gjallarform/thankyou.html`) |
 | `timezone` | `UTC` | Timezone for timestamps |
 | `formKey` | `''` (disabled) | CSRF-like token |
 | `timeTrapEnabled` | `true` | Enable/disable time trap |
@@ -348,27 +351,25 @@ You'll need to modify:
 
 ### Page Filenames
 
-By default, Gjallarform expects `contact.html` and `thankyou.html` at your site root. You can customize these filenames or use subdirectories by editing the `$CFG` array:
+The default configuration expects `contact.html` and `thankyou.html` inside the `gjallarform/` directory. You can change these paths in the `$CFG` array if you move or rename the files:
 
 ```php
 $CFG = [
   // ...
-  'contactPage'  => 'forms/contact.html',    // Use subdirectory or change for directory-style URLs like /contact/ . No slashes if using directory.
-  'thankYouPage' => 'forms/success.html',    // Custom filename or change for directory-style URLs like /success/. No slashes if using directory.
+  'contactPage'  => 'gjallarform/contact.html',   // path relative to site root
+  'thankYouPage' => 'gjallarform/thankyou.html',
   // ...
 ];
 ```
 
 **Examples:**
-- `'contact.html'` → redirects to `https://yoursite.com/contact.html`
-- `'forms/contact.html'` → redirects to `https://yoursite.com/forms/contact.html`
-- `'get-in-touch.html'` → redirects to `https://yoursite.com/get-in-touch.html`
+- `'gjallarform/contact.html'` → redirects to `https://yoursite.com/gjallarform/contact.html`
+- `'contact.html'` → redirects to `https://yoursite.com/contact.html` (if moved to root)
 - `'contact'` → redirects to `https://yoursite.com/contact` (web server handles trailing slash)
-- `'contact/success'` → redirects to `https://yoursite.com/contact/success`  (web server handles trailing slash)
 
-The leading slash is handled automatically, so you can use either `contact.html` or `/contact.html`.
+The leading slash is handled automatically.
 
-**If your site uses directory-based URLs** (e.g. `/contact/` instead of `contact.html`),
+**If your site uses directory-based URLs** (e.g. `/contact/` instead of `/contact.html`),
 use just the directory name without slashes:
 
 ```php
@@ -480,7 +481,7 @@ If legitimate users are getting "too fast" errors:
 ### Form Redirects to Wrong Page
 
 1. Verify `$CFG['siteUrl']` is set correctly
-2. Check that `thankyou.html` or its equivalent exists at root
+2. Check that `gjallarform/thankyou.html` (or your configured `thankYouPage` path) exists
 3. Check `.htaccess` rules (if using Apache)
 
 ---
