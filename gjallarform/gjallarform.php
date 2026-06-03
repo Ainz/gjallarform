@@ -44,13 +44,21 @@ $CFG = [
 # MATH CHALLENGE QUESTIONS — any edit here must be mirrored in gjallarform.js
 # ============================================================================
 $math_questions = [
-  ['question' => 'What is 5 + 3?', 'answer' => '8'],
-  ['question' => 'What is 10 - 4?', 'answer' => '6'],
-  ['question' => 'What is 6 × 2?', 'answer' => '12'],
-  ['question' => 'What is 15 ÷ 3?', 'answer' => '5'],
-  ['question' => 'What is 7 + 8?', 'answer' => '15'],
+  ['question' => 'What is 5 + 3?',   'answer' => '8'],
+  ['question' => 'What is 10 - 4?',  'answer' => '6'],
+  ['question' => 'What is 6 × 2?',   'answer' => '12'],
+  ['question' => 'What is 15 ÷ 3?',  'answer' => '5'],
+  ['question' => 'What is 7 + 8?',   'answer' => '15'],
   ['question' => 'What is 20 - 11?', 'answer' => '9'],
-  ['question' => 'What is 4 × 3?', 'answer' => '12'],
+  ['question' => 'What is 4 × 3?',   'answer' => '12'],
+  ['question' => 'What is 9 + 6?',   'answer' => '15'],
+  ['question' => 'What is 13 - 5?',  'answer' => '8'],
+  ['question' => 'What is 3 × 7?',   'answer' => '21'],
+  ['question' => 'What is 8 + 4?',   'answer' => '12'],
+  ['question' => 'What is 17 - 9?',  'answer' => '8'],
+  ['question' => 'What is 5 × 4?',   'answer' => '20'],
+  ['question' => 'What is 6 + 9?',   'answer' => '15'],
+  ['question' => 'What is 18 - 7?',  'answer' => '11'],
 ];
 
 # ============================================================================
@@ -202,25 +210,24 @@ $rts      = (int)($_POST['render_ts'] ?? 0);
 $math_answer = trim((string)($_POST['math_answer'] ?? ''));
 
 /**
- * Selects a math question index deterministically from the form key.
+ * Selects a math question index deterministically from the form key and host.
  *
- * Uses the standard IEEE 802.3 CRC32 polynomial (same algorithm as PHP's
- * built-in crc32()), masked to an unsigned 32-bit value with & 0xFFFFFFFF so
- * the result matches JavaScript's `>>> 0` treatment exactly. This ensures the
- * server independently arrives at the same question the browser displayed.
- *
- * Falls back to cryptographically random selection when formKey is absent.
+ * Seeds from formKey + HTTP_HOST so two installations with the same formKey
+ * but different domains land on different questions, reducing collision
+ * probability across sites. Falls back to random selection when formKey is
+ * absent (formKey disabled in config).
  *
  * @param array  $questions Array of math question/answer pairs
- * @param string $formKey   The site's configured form key (used as CRC32 seed)
+ * @param string $formKey   The site's configured form key
  * @return int Index into $questions
  */
 function get_math_question_index(array $questions, string $formKey): int {
   if (empty($formKey)) {
     return random_int(0, count($questions) - 1);
   }
-  // & 0xFFFFFFFF gives unsigned 32-bit — matches JS crc32() >>> 0 output.
-  return (crc32($formKey) & 0xFFFFFFFF) % count($questions);
+  $host = $_SERVER['HTTP_HOST'] ?? '';
+  $seed = hexdec(substr(md5($formKey . $host), 0, 8));
+  return (int)($seed % count($questions));
 }
 
 /** Honeypot: silent success (looks successful to bots, no mail sent) */
