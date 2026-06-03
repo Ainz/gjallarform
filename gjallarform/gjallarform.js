@@ -1,12 +1,17 @@
 /*!
- * Gjallarform UI helper (lean + field bubbles)
- * - Native validation bubbles only (no global banner)
- * - Email customValidity helper (friendly messages)
- * - Draft cache + TY page data via sessionStorage
- * - Rehydrate on ?err=…; reset on bfcache without ?err
- *
- * © 2025–present Conram.it. All rights reserved.
- * SPDX-License-Identifier: GPL-3.0-or-later
+ * -------------------------------------------------------
+ * Gjallarform - Contact Form Solution
+ * Copyright (C) 2026 Rikard Malmborg / CONRAM.IT
+ * https://conram.it/
+ * -------------------------------------------------------
+ * Filename: gjallarform.js
+ * Version:  0.95
+ * Author:   Rikard Malmborg
+ * -------------------------------------------------------
+ * Released under GNU General Public License v3.0
+ * https://www.gnu.org/licenses/gpl-3.0.html
+ * https://github.com/Ainz/gjallarform
+ * -------------------------------------------------------
  */
 
 (function () {
