@@ -117,8 +117,8 @@ $CFG = [
   'siteName'    => 'Your Site',
   'siteUrl'     => 'https://www.yoursite.com',   // Leave '' to auto-detect from httpHost
   'httpHost'    => 'www.yoursite.com',            // Fallback host used only when siteUrl is blank
-  'contactPage' => 'gjallarform/contact.html',
-  'thankYouPage'=> 'gjallarform/thankyou.html',
+  'contactPage' => '/gjallarform/contact.html',
+  'thankYouPage'=> '/gjallarform/thankyou.html',
   'timezone'    => 'Your/TimeZone',
 
   // Spam defense
