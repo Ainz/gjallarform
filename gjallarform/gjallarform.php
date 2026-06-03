@@ -29,7 +29,7 @@ $CFG = [
 
   // Locale / anti-abuse
   'timezone'    => 'UTC',                       // Used for timestamps in receipts
-  'formKey'     => 'yoursite-random123',        // Must match hidden form field ('' disables)
+  'formKey'     => 'yoursite-change-this-to-a-long-random-secret', // Fixed secret string — must match the hidden form_key field in HTML. Keep private. ('' disables)
   
   // Locale / anti-abuse by time limitations and submissions per time
 'timeTrapEnabled' => true,   // turn the time-trap on/off

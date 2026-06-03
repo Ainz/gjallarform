@@ -115,7 +115,7 @@ $CFG = [
   'timezone'     => 'Your/TimeZone',
 
   // Spam defense
-  'formKey'         => 'yoursite-' . rand(100000, 999999), // This can literally be anything, must match with form below.
+  'formKey'         => 'yoursite-change-this-to-a-long-random-secret', // Fixed secret string — must match the hidden form_key field in HTML. Keep private.
   'timeTrapEnabled' => true,          // Enable time trap (reject instant submissions)
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
@@ -131,7 +131,7 @@ In `contact.html`, change the form action:
 
 Update the form key value to match your PHP config:
 ```html
-<input name="form_key" type="hidden" value="yoursite-123456"> // This can literally be anything, must match the CFG above.
+<input name="form_key" type="hidden" value="yoursite-change-this-to-a-long-random-secret"> <!-- Must be the exact same fixed string as formKey in gjallarform.php -->
 ```
 
 **Link the JavaScript**
