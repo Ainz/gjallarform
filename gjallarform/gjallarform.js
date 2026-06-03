@@ -79,13 +79,6 @@ var CSS = `
     function firstWord(s) { var t = String(s || '').trim(); return t ? t.split(/\s+/)[0].slice(0, 60) : ''; }
 
     /**
-     * Generates a random 6-character reference ID in uppercase.
-     * Used for tracking submissions when server-generated ref isn't available.
-     * @returns {string} 6-character uppercase alphanumeric reference (e.g., 'A3F8D2')
-     */
-    function makeRef() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
-
-    /**
      * CRC32 lookup table — computed once at module load.
      * Implements the standard IEEE 802.3 reflected polynomial (0xEDB88320),
      * which is identical to PHP's built-in crc32() function.
@@ -168,7 +161,7 @@ var CSS = `
     // sessionStorage keys + helpers
     // ---------------------------------------------------------------------------
     var NS = 'gjf_';  // Namespace prefix to avoid collisions with other scripts
-    var K = { tyName: NS + 'ty_name', tySubject: NS + 'ty_subject', tyRef: NS + 'ty_ref', draft: NS + 'draft', draftTs: NS + 'draft_ts' };
+    var K = { tyName: NS + 'ty_name', tySubject: NS + 'ty_subject', draft: NS + 'draft', draftTs: NS + 'draft_ts' };
     var TTL = 30 * 60 * 1000;  // Time-to-live for drafts: 30 minutes in milliseconds
 
     /**
@@ -206,12 +199,10 @@ var CSS = `
      * @param {Object} payload - Submission data object
      * @param {string} [payload.name] - Submitter's full name (first word will be extracted)
      * @param {string} [payload.subject] - Message subject (truncated to 120 chars)
-     * @param {string} [payload.ref] - Reference ID (generated if not provided)
      */
     window.Gjallarform.setThankYou = function (payload) {
         Sset(K.tyName, firstWord(payload.name || ''));
         Sset(K.tySubject, String(payload.subject || '').slice(0, 120));
-        Sset(K.tyRef, (payload.ref && String(payload.ref).trim()) || makeRef());
     };
 
     /**
@@ -223,18 +214,17 @@ var CSS = `
      * - #gjallarform-thankyou-details: Container to show (hidden by default)
      * - #gjallarform-thankyou-name: Element to display submitter's first name
      * - #gjallarform-thankyou-subject: Element to display message subject
-     * - #gjallarform-thankyou-ref: Element to display reference ID
      *
      * Cleans up: All thank you data, draft data, and timestamps from storage.
      */
     window.Gjallarform.renderThankYou = function () {
-        var box = $('#gjallarform-thankyou-details'), n = $('#gjallarform-thankyou-name'), s = $('#gjallarform-thankyou-subject'), r = $('#gjallarform-thankyou-ref');
-        var name = Sget(K.tyName), subj = Sget(K.tySubject), ref = Sget(K.tyRef);
-        if (box && (name || subj || ref)) {
-            if (n) n.textContent = name || '—'; if (s) s.textContent = subj || '—'; if (r) r.textContent = ref || '—';
+        var box = $('#gjallarform-thankyou-details'), n = $('#gjallarform-thankyou-name'), s = $('#gjallarform-thankyou-subject');
+        var name = Sget(K.tyName), subj = Sget(K.tySubject);
+        if (box && (name || subj)) {
+            if (n) n.textContent = name || '—'; if (s) s.textContent = subj || '—';
             box.hidden = false;
         }
-        [K.tyName, K.tySubject, K.tyRef, K.draft, K.draftTs].forEach(Sdel);
+        [K.tyName, K.tySubject, K.draft, K.draftTs].forEach(Sdel);
     };
 
     // ---------------------------------------------------------------------------

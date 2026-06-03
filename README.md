@@ -216,11 +216,11 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 5. **Redirect**
    - **303 redirect to `thankyou.html`** - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
-   - sessionStorage populated with submission details
-   - JavaScript renders personalized thank-you message
+   - sessionStorage populated with name and subject for a personalized thank-you message
+   - JavaScript renders the thank-you details (name, subject)
 
 6. **Email Delivery**
-   - Admin receives notification with reference ID
+   - Admin receives notification with reference ID (authoritative ref appears in email only)
    - User receives confirmation copy (best-effort)
    - Both emails use aligned envelope sender for deliverability
 
@@ -325,7 +325,6 @@ These element IDs are populated automatically by JavaScript after a successful s
 | `gjallarform-thankyou-details` | Container, set `hidden` by default |
 | `gjallarform-thankyou-name` | Submitter's first name |
 | `gjallarform-thankyou-subject` | Message subject |
-| `gjallarform-thankyou-ref` | Server-generated reference ID |
 
 #### Adding Fields
 You'll need to modify:
