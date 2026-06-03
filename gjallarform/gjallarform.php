@@ -1,10 +1,18 @@
 <?php
-/**
- * Gjallarform — minimal contact form handler (PRG + PHP sendmail)
- * © 2025–present Conram.it. All rights reserved.
- * SPDX-License-Identifier: GPL-3.0-or-later
- * https://www.conram.it
- */
+/*-------------------------------------------------------+
+| Gjallarform - Contact Form Solution
+| Copyright (C) 2025 Rikard Malmborg / CONRAM.IT
+| https://conram.it/
++--------------------------------------------------------+
+| Filename: gjallarform.php
+| Version:  0.95
+| Author:   Rikard Malmborg
++--------------------------------------------------------+
+| This program is free software released under the
+| GNU General Public License v3.0 (GPL-3.0).
+| https://www.gnu.org/licenses/gpl-3.0.html
+| https://github.com/Ainz/gjallarform
++--------------------------------------------------------*/
 declare(strict_types=1);
 
 # ============================================================================
