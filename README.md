@@ -173,7 +173,15 @@ Measures how long between page load and form submission. Requires at least 2 sec
 'math_challenge' => true,    // Enable/disable
 ```
 
-Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users. Question selection is deterministic based on form key for consistency.
+Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users.
+
+**How question selection works:** Gjallarform picks from a pool of 15 simple arithmetic questions. The selected question is derived from a hash of your `formKey` combined with your site's domain (`HTTP_HOST`), so:
+
+- The same question always appears on your site — no random flickering on refresh
+- Two sites that happen to share a similar `formKey` but run on different domains will land on different questions
+- The question index is computed server-side and cannot be manipulated by the submitter
+
+This means there is no config to tune — the seeding just works automatically once `formKey` is set.
 
 ### Recommended Combinations
 
@@ -486,7 +494,7 @@ If legitimate users are getting "too fast" errors:
 ✅ Email header injection (sanitization of subject and all display-name fields)  
 ✅ CSRF-style attacks (form key)  
 ✅ Timing attacks on form key ( constant-time comparison via <a href="https://www.php.net/manual/en/function.hash-equals.php" target="_blank" rel="noopener noreferrer">`hash_equals()`</a> )  
-✅ Math challenge question-picking (index computed server-side when `formKey` is set)  
+✅ Math challenge question-picking (index computed server-side from `formKey` + domain — cannot be manipulated by submitter, differs across installations)  
 ✅ Oversized payloads (server-side field length limits)  
 
 ### What It Doesn't Protect Against
