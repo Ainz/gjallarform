@@ -226,14 +226,14 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 4. **PHP Processing**
    - Honeypot check (silent success if triggered)
-   - **Form key validation** (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site ( <a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener noreferrer">CSRF protection</a> )
+   - Form key validation (if enabled) - A token that proves the submission came from your actual form, not a forged request from another site ( <a href="https://owasp.org/www-community/attacks/csrf" target="_blank" rel="noopener noreferrer">CSRF protection</a> )
    - Time trap check (if enabled)
    - Field validation (presence, format, length)
    - Email composition (admin + confirmation)
    - Mail sending via PHP `mail()`
 
 5. **Redirect**
-   - **303 redirect to `thankyou.html`** - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
+   - 303 redirect to `thankyou.html` - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
    - sessionStorage populated with name and subject for a personalized thank-you message
    - JavaScript renders the thank-you details (name, subject)
 
@@ -326,7 +326,6 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 |-------|--------|---------|
 | `website` | User (honeypot) | Must stay hidden via CSS — bots fill it, humans don't |
 | `form_key` | You | Must match PHP config |
-| `site_tag` | You | Informational label |
 | `render_ts` | JavaScript | Page load timestamp for time trap |
 | `math_index` | JavaScript | Math question index |
 
@@ -589,7 +588,7 @@ Before going live:
 
 Gjallarform is free software licensed under the GNU General Public License v3.0 or later.
 
-© 2025–present Conram.it  
+© 2026 – present Conram.it  
 SPDX-License-Identifier: GPL-3.0-or-later
 
 See [LICENSE](LICENSE) file for full terms.
@@ -607,8 +606,8 @@ Under the condition that derivative works are also licensed under GPL-3.0-or-lat
 
 This is a personal project released for public use. 
 
-**Questions?** Open an issue on GitHub.  
-**Found a bug?** Pull requests welcome.  
+**Found a bug?** Open an issue on GitHub.
+**Help or questions** Use the Discussion Forum.  
 **Need commercial support?** Contact via the repository.
 
 ---
