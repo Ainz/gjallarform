@@ -215,7 +215,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 2. **User Fills Form**
    - Native browser validation provides real-time feedback
    - Draft automatically cached in sessionStorage on input
-   - Email field validates ASCII-only characters
+   - Email field validates ASCII-only characters and basic format (catches malformed addresses the browser's native `type="email"` passes silently)
 
 3. **Submit**
    - JavaScript validates form before submission
@@ -314,7 +314,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 | Field | Required | Notes |
 |-------|----------|-------|
 | `fullname` (or `name`) | Yes | Accepts either field name |
-| `email` | Yes | ASCII only, validated format |
+| `email` | Yes | ASCII only; client-side format validation via regex (mirrors server-side check) |
 | `subject` | No | Defaults to site name if omitted |
 | `message` | Yes | |
 | `math_answer` | When enabled | Answer to math challenge question |

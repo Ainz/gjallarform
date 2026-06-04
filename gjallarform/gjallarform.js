@@ -293,10 +293,10 @@ var CSS = `
     // Field-level helpers (native bubbles via setCustomValidity)
     // ---------------------------------------------------------------------------
     /**
-     * Attaches ASCII-only validation to email input field.
+     * Attaches ASCII-only and format validation to email input field.
      * Prevents submission of emails with non-ASCII characters (accented letters, emoji, etc.)
-     * which may not be supported by all email systems. Uses native browser validation
-     * bubbles via setCustomValidity() for consistent UX.
+     * and catches malformed addresses that the browser's native type="email" passes silently
+     * (e.g. missing TLD dot). Uses native browser validation bubbles via setCustomValidity().
      *
      * If page loads with email-related error codes (?err=email_*), automatically
      * displays the validation bubble and focuses the field.
@@ -307,15 +307,18 @@ var CSS = `
         if (!input) return;
 
         /**
-         * Validates email input for ASCII-only characters.
-         * Sets custom validity message if non-ASCII found, clears it otherwise.
+         * Validates email input for ASCII-only characters and basic format.
+         * Sets custom validity message if non-ASCII found or format is invalid, clears it otherwise.
          * Empty values are allowed (handled by 'required' attribute).
          */
         function checkEmailAscii() {
             var v = input.value || '';
             if (!v) { input.setCustomValidity(''); return; } // required attribute handles empties
             if (/[^\x00-\x7F]/.test(v)) { input.setCustomValidity('Use standard ASCII email (no accented characters).'); return; }
-            // Let the browser's type=email handle the rest
+            if (!/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(v)) {
+                input.setCustomValidity('Please enter a valid email address.');
+                return;
+            }
             input.setCustomValidity('');
         }
 
