@@ -1,5 +1,6 @@
-<img src="https://github.com/Ainz/gjallarform/blob/main/assets/gjallarform-large.png" alt="Gjallarform logo" title="Gjallarform Logo" width="300" align="right" />
+
 # Gjallarform
+<img src="https://github.com/Ainz/gjallarform/blob/main/assets/gjallarform-large.png" alt="Gjallarform logo" title="Gjallarform Logo" width="300" align="right" />
 
 **A minimal, secure contact form for PHP shared hosting**
 
@@ -8,6 +9,7 @@ Gjallarform is a self-contained contact form solution designed for simplicity, s
 Perfect for personal sites, portfolios, and small business pages running on shared hosting.
 
 **[⬇ Download latest release — v0.95 Public Beta](https://github.com/Ainz/gjallarform/releases/tag/0.95-beta)**
+
 ---
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Version](https://img.shields.io/badge/Version-0.95%20beta-orange)
