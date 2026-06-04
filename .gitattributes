@@ -2,3 +2,4 @@ assets/          export-ignore
 FLOWCHART.md     export-ignore
 CHANGELOG.md     export-ignore
 .gitignore       export-ignore
+.gitattributes   export-ignore
