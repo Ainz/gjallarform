@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.93] - 2026-04-21
+## [0.95] - 2026-06-03
+
+### Changed
+- PHP version requirement standardized to 8.1+ throughout README (was inconsistently 8.1 in one place, 8.2 in another)
+- `formKey` configuration examples in README and `gjallarform.php` replaced with a fixed placeholder string; previous examples used `rand()` which generated a new value on every page load, misrepresenting the requirement that `formKey` must be a fixed secret matching the hidden HTML field
+- User-facing reference number removed from thank-you page — the sessionStorage ref was not guaranteed to match the server-generated `$ref`, making it misleading; the authoritative reference now appears in admin and confirmation emails only
+
+### Added
+- Prominent `[!WARNING]` callout at the top of the Configuration Reference section in README noting that `form_disabled` defaults to `true` and must be set to `false` before the form will accept live submissions
+- `form_disabled` documented in the Optional Settings table
+- `form_disabled` added as the first item in the Deployment Checklist
+
+## [0.94] - 2026-04-21
 
 ### Security
 - **HIGH**: Sanitize `$CFG['siteName']`, `$CFG['fromDisplay']`, and `$CFG['replyDisplay']`
@@ -91,7 +103,7 @@ Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds 
 (Previously released as 0.99-RC)
 
 ### About This Release
-Release Candidate for Gjallarform 1.0. Core functionality is stable and tested. Suitable for production use on personal and small business sites. Public release pending final documentation review.
+First public release. Core functionality stable and tested. Suitable for production use on personal and small business sites.
 
 ### Core Features
 
@@ -134,44 +146,11 @@ Release Candidate for Gjallarform 1.0. Core functionality is stable and tested. 
 - Server-side mail sending limits strongly recommended (e.g., 50/day)
 
 ### Known Limitations
-- Single form per page (form-agnostic support planned for 1.x)
+- Single form per page (form-agnostic support planned for future)
 - No rate limiting at application level (relies on infrastructure)
 - No database/file logging (mail-only audit trail)
 - No AJAX submission mode
 - sessionStorage only (no cross-tab draft sharing)
 
-### File Structure
-```
-your-site/
-├── gjallarform/
-│   ├── gjallarform.php  # Backend handler
-│   └── gjallarform.js   # Frontend UI layer
-├── contact.html         # Example form markup
-├── thankyou.html        # Example thank-you page
-├── README.md            # Documentation
-├── CHANGELOG.md         # This file
-└── LICENSE              # License terms
-```
-
 ### Configuration
 All user configuration is centralized in the `$CFG` array at the top of `gjallarform.php`. No code changes required below the config block.
-
-### Upgrade Notes
-This is the first public release candidate. No upgrade path exists from earlier private versions.
-
----
-
-## [Unreleased]
-
-### Planned for 1.0
-- Finalized public documentation
-- Installation video/guide
-- Community feedback integration
-
-### Under Consideration for 1.x
-- Form-agnostic pattern matching (work with any form structure)
-- Optional rate limiting module (strict tier)
-- Database logging option
-- Multi-form support on single page
-- AJAX submission mode
-- Localization/i18n support

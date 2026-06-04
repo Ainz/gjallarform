@@ -1,12 +1,17 @@
 /*!
- * Gjallarform UI helper (lean + field bubbles)
- * - Native validation bubbles only (no global banner)
- * - Email customValidity helper (friendly messages)
- * - Draft cache + TY page data via sessionStorage
- * - Rehydrate on ?err=…; reset on bfcache without ?err
- *
- * © 2025–present Conram.it. All rights reserved.
- * SPDX-License-Identifier: GPL-3.0-or-later
+ * -------------------------------------------------------
+ * Gjallarform - Contact Form Solution
+ * Copyright (C) 2026 Rikard Malmborg / CONRAM.IT
+ * https://conram.it/
+ * -------------------------------------------------------
+ * Filename: gjallarform.js
+ * Version:  0.95
+ * Author:   Rikard Malmborg
+ * -------------------------------------------------------
+ * Released under GNU General Public License v3.0
+ * https://www.gnu.org/licenses/gpl-3.0.html
+ * https://github.com/Ainz/gjallarform
+ * -------------------------------------------------------
  */
 
 (function () {
@@ -38,13 +43,21 @@ var CSS = `
     // Math challenge questions — any edit here must be mirrored in the PHP backend
     // ---------------------------------------------------------------------------
     var mathQuestions = [
-        { question: 'What is 5 + 3?', answer: '8' },
-        { question: 'What is 10 - 4?', answer: '6' },
-        { question: 'What is 6 × 2?', answer: '12' },
-        { question: 'What is 15 ÷ 3?', answer: '5' },
-        { question: 'What is 7 + 8?', answer: '15' },
+        { question: 'What is 5 + 3?',   answer: '8' },
+        { question: 'What is 10 - 4?',  answer: '6' },
+        { question: 'What is 6 × 2?',   answer: '12' },
+        { question: 'What is 15 ÷ 3?',  answer: '5' },
+        { question: 'What is 7 + 8?',   answer: '15' },
         { question: 'What is 20 - 11?', answer: '9' },
-        { question: 'What is 4 × 3?', answer: '12' }
+        { question: 'What is 4 × 3?',   answer: '12' },
+        { question: 'What is 9 + 6?',   answer: '15' },
+        { question: 'What is 13 - 5?',  answer: '8' },
+        { question: 'What is 3 × 7?',   answer: '21' },
+        { question: 'What is 8 + 4?',   answer: '12' },
+        { question: 'What is 17 - 9?',  answer: '8' },
+        { question: 'What is 5 × 4?',   answer: '20' },
+        { question: 'What is 6 + 9?',   answer: '15' },
+        { question: 'What is 18 - 7?',  answer: '11' }
     ];
 
     // ---------------------------------------------------------------------------
@@ -79,55 +92,60 @@ var CSS = `
     function firstWord(s) { var t = String(s || '').trim(); return t ? t.split(/\s+/)[0].slice(0, 60) : ''; }
 
     /**
-     * Generates a random 6-character reference ID in uppercase.
-     * Used for tracking submissions when server-generated ref isn't available.
-     * @returns {string} 6-character uppercase alphanumeric reference (e.g., 'A3F8D2')
+     * Simple MD5-based hash returning an unsigned 32-bit integer.
+     * Mirrors the PHP seeding: hexdec(substr(md5(formKey + host), 0, 8)).
+     * Uses a lightweight MD5 port — only needs to match PHP for question selection.
      */
-    function makeRef() { return Math.random().toString(36).slice(2, 8).toUpperCase(); }
-
-    /**
-     * CRC32 lookup table — computed once at module load.
-     * Implements the standard IEEE 802.3 reflected polynomial (0xEDB88320),
-     * which is identical to PHP's built-in crc32() function.
-     */
-    var CRC32_TABLE = (function () {
-        var t = new Uint32Array(256);
-        for (var i = 0; i < 256; i++) {
-            var c = i;
-            for (var k = 0; k < 8; k++) {
-                c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-            }
-            t[i] = c;
+    function md5Seed(str) {
+        // SparkMD5-free single-function MD5 sufficient for non-crypto seeding.
+        // Based on the RFC 1321 reference implementation, trimmed to 32-bit output.
+        function safeAdd(x, y) { var lsw = (x & 0xFFFF) + (y & 0xFFFF); return (((x >> 16) + (y >> 16) + (lsw >> 16)) << 16) | (lsw & 0xFFFF); }
+        function bitRotateLeft(num, cnt) { return (num << cnt) | (num >>> (32 - cnt)); }
+        function md5cmn(q, a, b, x, s, t) { return safeAdd(bitRotateLeft(safeAdd(safeAdd(a, q), safeAdd(x, t)), s), b); }
+        function md5ff(a,b,c,d,x,s,t){return md5cmn((b&c)|((~b)&d),a,b,x,s,t);}
+        function md5gg(a,b,c,d,x,s,t){return md5cmn((b&d)|(c&(~d)),a,b,x,s,t);}
+        function md5hh(a,b,c,d,x,s,t){return md5cmn(b^c^d,a,b,x,s,t);}
+        function md5ii(a,b,c,d,x,s,t){return md5cmn(c^(b|(~d)),a,b,x,s,t);}
+        // Encode string to array of little-endian 32-bit words
+        var length8 = str.length * 8;
+        var x = [];
+        for (var i = 0; i < str.length; i++) { x[i >> 2] |= (str.charCodeAt(i) & 0xFF) << ((i % 4) * 8); }
+        x[str.length >> 2] |= 0x80 << ((str.length % 4) * 8);
+        x[(((str.length + 8) >> 6) << 4) + 14] = length8 & 0xFFFFFFFF;
+        x[(((str.length + 8) >> 6) << 4) + 15] = Math.floor(length8 / 0x100000000);
+        var a = 1732584193, b = -271733879, c = -1732584194, d = 271733878;
+        for (var i = 0; i < x.length; i += 16) {
+            var A=a,B=b,C=c,D=d;
+            a=md5ff(a,b,c,d,x[i+0],7,-680876936);d=md5ff(d,a,b,c,x[i+1],12,-389564586);c=md5ff(c,d,a,b,x[i+2],17,606105819);b=md5ff(b,c,d,a,x[i+3],22,-1044525330);
+            a=md5ff(a,b,c,d,x[i+4],7,-176418897);d=md5ff(d,a,b,c,x[i+5],12,1200080426);c=md5ff(c,d,a,b,x[i+6],17,-1473231341);b=md5ff(b,c,d,a,x[i+7],22,-45705983);
+            a=md5ff(a,b,c,d,x[i+8],7,1770035416);d=md5ff(d,a,b,c,x[i+9],12,-1958414417);c=md5ff(c,d,a,b,x[i+10],17,-42063);b=md5ff(b,c,d,a,x[i+11],22,-1990404162);
+            a=md5ff(a,b,c,d,x[i+12],7,1804603682);d=md5ff(d,a,b,c,x[i+13],12,-40341101);c=md5ff(c,d,a,b,x[i+14],17,-1502002290);b=md5ff(b,c,d,a,x[i+15],22,1236535329);
+            a=md5gg(a,b,c,d,x[i+1],5,-165796510);d=md5gg(d,a,b,c,x[i+6],9,-1069501632);c=md5gg(c,d,a,b,x[i+11],14,643717713);b=md5gg(b,c,d,a,x[i+0],20,-373897302);
+            a=md5gg(a,b,c,d,x[i+5],5,-701558691);d=md5gg(d,a,b,c,x[i+10],9,38016083);c=md5gg(c,d,a,b,x[i+15],14,-660478335);b=md5gg(b,c,d,a,x[i+4],20,-405537848);
+            a=md5gg(a,b,c,d,x[i+9],5,568446438);d=md5gg(d,a,b,c,x[i+14],9,-1019803690);c=md5gg(c,d,a,b,x[i+3],14,-187363961);b=md5gg(b,c,d,a,x[i+8],20,1163531501);
+            a=md5gg(a,b,c,d,x[i+13],5,-1444681467);d=md5gg(d,a,b,c,x[i+2],9,-51403784);c=md5gg(c,d,a,b,x[i+7],14,1735328473);b=md5gg(b,c,d,a,x[i+12],20,-1926607734);
+            a=md5hh(a,b,c,d,x[i+5],4,-378558);d=md5hh(d,a,b,c,x[i+8],11,-2022574463);c=md5hh(c,d,a,b,x[i+11],16,1839030562);b=md5hh(b,c,d,a,x[i+14],23,-35309556);
+            a=md5hh(a,b,c,d,x[i+1],4,-1530992060);d=md5hh(d,a,b,c,x[i+4],11,1272893353);c=md5hh(c,d,a,b,x[i+7],16,-155497632);b=md5hh(b,c,d,a,x[i+10],23,-1094730640);
+            a=md5hh(a,b,c,d,x[i+13],4,681279174);d=md5hh(d,a,b,c,x[i+0],11,-358537222);c=md5hh(c,d,a,b,x[i+3],16,-722521979);b=md5hh(b,c,d,a,x[i+6],23,76029189);
+            a=md5hh(a,b,c,d,x[i+9],4,-640364487);d=md5hh(d,a,b,c,x[i+12],11,-421815835);c=md5hh(c,d,a,b,x[i+15],16,530742520);b=md5hh(b,c,d,a,x[i+2],23,-995338651);
+            a=md5ii(a,b,c,d,x[i+0],6,-198630844);d=md5ii(d,a,b,c,x[i+7],10,1126891415);c=md5ii(c,d,a,b,x[i+14],15,-1416354905);b=md5ii(b,c,d,a,x[i+5],21,-57434055);
+            a=md5ii(a,b,c,d,x[i+12],6,1700485571);d=md5ii(d,a,b,c,x[i+3],10,-1894986606);c=md5ii(c,d,a,b,x[i+10],15,-1051523);b=md5ii(b,c,d,a,x[i+1],21,-2054922799);
+            a=md5ii(a,b,c,d,x[i+8],6,1873313359);d=md5ii(d,a,b,c,x[i+15],10,-30611744);c=md5ii(c,d,a,b,x[i+6],15,-1560198380);b=md5ii(b,c,d,a,x[i+13],21,1309151649);
+            a=md5ii(a,b,c,d,x[i+4],6,-145523070);d=md5ii(d,a,b,c,x[i+11],10,-1120210379);c=md5ii(c,d,a,b,x[i+2],15,718787259);b=md5ii(b,c,d,a,x[i+9],21,-343485551);
+            a=safeAdd(a,A);b=safeAdd(b,B);c=safeAdd(c,C);d=safeAdd(d,D);
         }
-        return t;
-    }());
-
-    /**
-     * Standard IEEE 802.3 CRC32 — output matches PHP's crc32() exactly.
-     *
-     * Returns an unsigned 32-bit integer (via >>> 0), mirroring PHP's
-     * `crc32($str) & 0xFFFFFFFF` treatment, so both sides select the same
-     * math question for a given formKey without further conversion.
-     *
-     * @param {string} str - ASCII input string (formKey is always ASCII)
-     * @returns {number} Unsigned 32-bit CRC32 value
-     */
-    function crc32(str) {
-        var crc = 0xFFFFFFFF;
-        for (var i = 0; i < str.length; i++) {
-            crc = CRC32_TABLE[(crc ^ str.charCodeAt(i)) & 0xFF] ^ (crc >>> 8);
-        }
-        return (crc ^ 0xFFFFFFFF) >>> 0;
+        // Return first 8 hex chars as an unsigned 32-bit integer (mirrors hexdec(substr(md5(...),0,8)))
+        var hex = ('00000000' + (a >>> 0).toString(16)).slice(-8);
+        return parseInt(hex, 16);
     }
 
     /**
      * Initializes the math challenge field with deterministic question selection.
      *
-     * Uses the same IEEE 802.3 CRC32 algorithm as PHP's crc32() so the browser
-     * and server independently arrive at the same question index for a given
-     * formKey. When formKey is present the server ignores the posted math_index
-     * and recomputes it — the hidden field is only used as a fallback when
-     * formKey is intentionally left blank in $CFG.
+     * Seeds from formKey + hostname (window.location.hostname) to mirror the PHP
+     * logic (formKey + HTTP_HOST), so different installations on different domains
+     * land on different questions even with identical formKeys. The server ignores
+     * the posted math_index when formKey is set and recomputes it independently.
      *
      * @param {HTMLFormElement} form - The form containing the math challenge
      */
@@ -144,10 +162,9 @@ var CSS = `
         var index = 0;
 
         if (formKey) {
-            // crc32() returns an unsigned 32-bit value; no abs() needed.
-            index = crc32(formKey) % mathQuestions.length;
+            var seed = md5Seed(formKey + window.location.hostname);
+            index = seed % mathQuestions.length;
         } else {
-            // Fallback to random if no form key
             index = Math.floor(Math.random() * mathQuestions.length);
         }
 
@@ -168,7 +185,7 @@ var CSS = `
     // sessionStorage keys + helpers
     // ---------------------------------------------------------------------------
     var NS = 'gjf_';  // Namespace prefix to avoid collisions with other scripts
-    var K = { tyName: NS + 'ty_name', tySubject: NS + 'ty_subject', tyRef: NS + 'ty_ref', draft: NS + 'draft', draftTs: NS + 'draft_ts' };
+    var K = { tyName: NS + 'ty_name', tySubject: NS + 'ty_subject', draft: NS + 'draft', draftTs: NS + 'draft_ts' };
     var TTL = 30 * 60 * 1000;  // Time-to-live for drafts: 30 minutes in milliseconds
 
     /**
@@ -206,12 +223,10 @@ var CSS = `
      * @param {Object} payload - Submission data object
      * @param {string} [payload.name] - Submitter's full name (first word will be extracted)
      * @param {string} [payload.subject] - Message subject (truncated to 120 chars)
-     * @param {string} [payload.ref] - Reference ID (generated if not provided)
      */
     window.Gjallarform.setThankYou = function (payload) {
         Sset(K.tyName, firstWord(payload.name || ''));
         Sset(K.tySubject, String(payload.subject || '').slice(0, 120));
-        Sset(K.tyRef, (payload.ref && String(payload.ref).trim()) || makeRef());
     };
 
     /**
@@ -223,18 +238,17 @@ var CSS = `
      * - #gjallarform-thankyou-details: Container to show (hidden by default)
      * - #gjallarform-thankyou-name: Element to display submitter's first name
      * - #gjallarform-thankyou-subject: Element to display message subject
-     * - #gjallarform-thankyou-ref: Element to display reference ID
      *
      * Cleans up: All thank you data, draft data, and timestamps from storage.
      */
     window.Gjallarform.renderThankYou = function () {
-        var box = $('#gjallarform-thankyou-details'), n = $('#gjallarform-thankyou-name'), s = $('#gjallarform-thankyou-subject'), r = $('#gjallarform-thankyou-ref');
-        var name = Sget(K.tyName), subj = Sget(K.tySubject), ref = Sget(K.tyRef);
-        if (box && (name || subj || ref)) {
-            if (n) n.textContent = name || '—'; if (s) s.textContent = subj || '—'; if (r) r.textContent = ref || '—';
+        var box = $('#gjallarform-thankyou-details'), n = $('#gjallarform-thankyou-name'), s = $('#gjallarform-thankyou-subject');
+        var name = Sget(K.tyName), subj = Sget(K.tySubject);
+        if (box && (name || subj)) {
+            if (n) n.textContent = name || '—'; if (s) s.textContent = subj || '—';
             box.hidden = false;
         }
-        [K.tyName, K.tySubject, K.tyRef, K.draft, K.draftTs].forEach(Sdel);
+        [K.tyName, K.tySubject, K.draft, K.draftTs].forEach(Sdel);
     };
 
     // ---------------------------------------------------------------------------
@@ -279,10 +293,10 @@ var CSS = `
     // Field-level helpers (native bubbles via setCustomValidity)
     // ---------------------------------------------------------------------------
     /**
-     * Attaches ASCII-only validation to email input field.
+     * Attaches ASCII-only and format validation to email input field.
      * Prevents submission of emails with non-ASCII characters (accented letters, emoji, etc.)
-     * which may not be supported by all email systems. Uses native browser validation
-     * bubbles via setCustomValidity() for consistent UX.
+     * and catches malformed addresses that the browser's native type="email" passes silently
+     * (e.g. missing TLD dot). Uses native browser validation bubbles via setCustomValidity().
      *
      * If page loads with email-related error codes (?err=email_*), automatically
      * displays the validation bubble and focuses the field.
@@ -293,15 +307,18 @@ var CSS = `
         if (!input) return;
 
         /**
-         * Validates email input for ASCII-only characters.
-         * Sets custom validity message if non-ASCII found, clears it otherwise.
+         * Validates email input for ASCII-only characters and basic format.
+         * Sets custom validity message if non-ASCII found or format is invalid, clears it otherwise.
          * Empty values are allowed (handled by 'required' attribute).
          */
         function checkEmailAscii() {
             var v = input.value || '';
             if (!v) { input.setCustomValidity(''); return; } // required attribute handles empties
             if (/[^\x00-\x7F]/.test(v)) { input.setCustomValidity('Use standard ASCII email (no accented characters).'); return; }
-            // Let the browser's type=email handle the rest
+            if (!/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/.test(v)) {
+                input.setCustomValidity('Please enter a valid email address.');
+                return;
+            }
             input.setCustomValidity('');
         }
 

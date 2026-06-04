@@ -69,7 +69,7 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 ### 1. Prerequisites
 
 **Server Requirements**
-- PHP 8.2 or higher
+- PHP 8.1 or higher
 - PHP `mail()` function enabled *(Most shared hosting providers enable mail() by default. Check your control panel under PHP settings or Email, or contact your host if unsure. You can also verify by creating a one-line PHP file: `<?php phpinfo(); ?>` — search for "sendmail" in the output.)*
 - FTP access to the server or a file manager in your hosting control panel from which you can handle files
 
@@ -87,51 +87,59 @@ Before deploying, configure your mail server:
 ### 2. Installation
 
 **Upload Files**
+
+The `gjallarform/` directory is the self-contained deployable package — upload it as-is to your site root:
+
 ```
 your-site/
-├── gjallarform/
-│   ├── gjallarform.php
-│   └── gjallarform.js
-├── contact.html
-└── thankyou.html
+└── gjallarform/
+    ├── gjallarform.php
+    ├── gjallarform.js
+    ├── contact.html
+    └── thankyou.html
 ```
 
 **Configure gjallarform.php**
+
 Open `gjallarform/gjallarform.php` and edit only the `$CFG` array:
 
 ```php
 $CFG = [
+  // Kill switch — set to false before going live
+  'form_disabled' => true,
+
   // Mail routing
   'to'          => 'you@yourdomain.com',        // Where submissions go
   'from'        => 'form-engine@yourdomain.com', // MUST be on your domain, can be same as 'to'
-  'fromDisplay' => 'Your Site Contact Form',
-  'replyDisplay'=> 'Your Site',
+  'fromDisplay' => 'Your Site Contact Form',     // Display name in From: header
+  'replyDisplay'=> 'Your Site',                  // Display name in Reply-To: header
 
   // Site details
-  'siteName'     => 'Your Site',
-  'siteUrl'      => 'https://www.yoursite.com',
-  'contactPage'  => 'contact.html',    // Use 'contact' (no extension) for directory-style URLs like /contact/
-  'thankYouPage' => 'thankyou.html',   // Use 'thankyou' (no extension) for directory-style URLs like /thankyou/
-  'timezone'     => 'Your/TimeZone',
+  'siteName'    => 'Your Site',
+  'siteUrl'     => 'https://www.yoursite.com',   // Leave '' to auto-detect from httpHost
+  'httpHost'    => 'www.yoursite.com',            // Fallback host used only when siteUrl is blank
+  'contactPage' => 'contact.html',              // Assuming all files are in the same default directory
+  'thankYouPage'=> 'thankyou.html',             // Assuming all files are in the same default directory
+  'timezone'    => 'Your/TimeZone',
 
   // Spam defense
-  'formKey'         => 'yoursite-' . rand(100000, 999999), // This can literally be anything, must match with form below.
-  'timeTrapEnabled' => true,          // Enable time trap (reject instant submissions)
+  'formKey'         => 'yoursite-change-this-to-a-long-random-secret', // Fixed secret — must match hidden form_key field in HTML
+  'timeTrapEnabled' => true,          // Reject submissions faster than timeTrapMinMs
   'timeTrapMinMs'   => 2000,
   'timeTrapGraceMs' => 50,
-  'math_challenge'  => true,          // Enable math verification question
+  'math_challenge'  => true,          // Enable arithmetic challenge question
 ];
 ```
 
 **Update HTML Form**
-In `contact.html`, change the form action:
+In `gjallarform/contact.html`, change the form action:
 ```html
 <form class="gjallarform" action="https://www.yoursite.com/gjallarform/gjallarform.php" method="POST">
 ```
 
 Update the form key value to match your PHP config:
 ```html
-<input name="form_key" type="hidden" value="yoursite-123456"> // This can literally be anything, must match the CFG above.
+<input name="form_key" type="hidden" value="yoursite-change-this-to-a-long-random-secret"> <!-- Must be the exact same fixed string as formKey in gjallarform.php -->
 ```
 
 **Link the JavaScript**
@@ -173,7 +181,15 @@ Measures how long between page load and form submission. Requires at least 2 sec
 'math_challenge' => true,    // Enable/disable
 ```
 
-Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users. Question selection is deterministic based on form key for consistency.
+Simple arithmetic question (e.g., "What is 5 + 3?") that must be answered correctly. Stops manual spam operators while remaining trivial for real users.
+
+**How question selection works:** Gjallarform picks from a pool of 15 simple arithmetic questions. The selected question is derived from a hash of your `formKey` combined with your site's domain (`HTTP_HOST`), so:
+
+- The same question always appears on your site — no random flickering on refresh
+- Two sites that happen to share a similar `formKey` but run on different domains will land on different questions
+- The question index is computed server-side and cannot be manipulated by the submitter
+
+This means there is no config to tune — the seeding just works automatically once `formKey` is set.
 
 ### Recommended Combinations
 
@@ -199,7 +215,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 2. **User Fills Form**
    - Native browser validation provides real-time feedback
    - Draft automatically cached in sessionStorage on input
-   - Email field validates ASCII-only characters
+   - Email field validates ASCII-only characters and basic format (catches malformed addresses the browser's native `type="email"` passes silently)
 
 3. **Submit**
    - JavaScript validates form before submission
@@ -216,11 +232,11 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 5. **Redirect**
    - **303 redirect to `thankyou.html`** - Uses the <a href="https://en.wikipedia.org/wiki/Post/Redirect/Get" target="_blank" rel="noopener noreferrer">Post/Redirect/Get pattern</a> (PRG), which prevents duplicate submissions if the user refreshes their browser. The 303 status code specifically tells browsers "don't resubmit the form on refresh."
-   - sessionStorage populated with submission details
-   - JavaScript renders personalized thank-you message
+   - sessionStorage populated with name and subject for a personalized thank-you message
+   - JavaScript renders the thank-you details (name, subject)
 
 6. **Email Delivery**
-   - Admin receives notification with reference ID
+   - Admin receives notification with reference ID (authoritative ref appears in email only)
    - User receives confirmation copy (best-effort)
    - Both emails use aligned envelope sender for deliverability
 
@@ -245,43 +261,46 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 
 ## Configuration Reference
 
-### Required Settings
+> [!WARNING]
+> **`form_disabled` is set to `true` by default.**
+> The form will silently reject all submissions until you change this.
+> Open `gjallarform.php` and set `'form_disabled' => false` before going live.
 
-| Setting | Purpose | Example |
-|---------|---------|---------|
-| `to` | Where submissions are sent | `admin@yoursite.com` |
-| `from` | Envelope sender (must be on your domain) | `form@yoursite.com` |
-| `siteName` | Used in email subjects | `My Site` |
+### Kill Switch
 
-### Optional Settings
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `form_disabled` | `true` | Set to `false` to accept live submissions. Shipped as `true` so the form is safe to deploy before configuration is complete. When `true`, every POST request returns a 503 and exits immediately — no email is sent, no error is shown to the visitor. |
 
-| Setting | Default | Purpose |
-|---------|---------|---------|
-| `siteUrl` | Auto-detected | Base URL for redirects |
-| `contactPage` | `contact.html` | Contact form page filename/path |
-| `thankYouPage` | `thankyou.html` | Thank you page filename/path |
-| `timezone` | `UTC` | Timezone for timestamps |
-| `formKey` | `''` (disabled) | CSRF-like token |
-| `timeTrapEnabled` | `true` | Enable/disable time trap |
-| `timeTrapMinMs` | `2000` | Minimum submit time (ms) |
-| `timeTrapGraceMs` | `50` | Jitter allowance (ms) |
-| `math_challenge` | `true` | Enable math verification question |
+### Mail Routing
 
-### Email Addresses Explained
+| Setting | Required | Default | Notes |
+|---------|----------|---------|-------|
+| `to` | Yes | — | The address that receives submission notification emails. Can be any address (your own domain, Gmail, etc.). |
+| `from` | Yes | — | Envelope sender. **Must be an address on your own domain** (e.g. `form-engine@yourdomain.com`) for SPF/DKIM to pass. This is not the address visitors reply to — see `to` for that. |
+| `fromDisplay` | No | `''` | Display name shown in the `From:` header of outgoing emails (e.g. `YourSite Contact Form`). Purely cosmetic — has no effect on deliverability. |
+| `replyDisplay` | No | `''` | Display name for the `Reply-To:` header in admin notification emails. Purely cosmetic. |
 
-**`from` Address**
-- **MUST** be on your domain for SPF/DKIM to work
-- Used as envelope sender (`-f` flag)
-- Doesn't need to be a real mailbox (but can be)
-- Example: `noreply@yourdomain.com` or `form-engine@yourdomain.com`
+### Site Identity
 
-**`to` Address**
-- Where you actually want to receive submissions
-- Can be on any domain (Gmail, etc.)
-- Used as `Reply-To:` in confirmation emails
-- Example: `you@gmail.com` or `contact@yourdomain.com`
+| Setting | Required | Default | Notes |
+|---------|----------|---------|-------|
+| `siteName` | Yes | — | Used in email subjects and labels (e.g. produces subjects like `YourSite Contact`). |
+| `siteUrl` | No | Auto-detected | Full base URL including scheme (e.g. `https://www.yoursite.com`). Used to build redirect URLs after submission. If blank, falls back to `httpHost` with an auto-detected scheme. Setting this explicitly is safer and recommended. |
+| `httpHost` | No | Auto-detected | Fallback hostname (e.g. `www.yoursite.com`) used only when `siteUrl` is blank. Unlike `$_SERVER['HTTP_HOST']`, this value is never taken from the request — it must be set here explicitly, which prevents host-header injection. Has no effect when `siteUrl` is set. |
+| `contactPage` | No | `contact.html` | Path to the contact form page relative to site root (e.g. `gjallarform/contact.html`). Used as the destination for error redirects. |
+| `thankYouPage` | No | `thankyou.html` | Path to the thank-you page relative to site root (e.g. `gjallarform/thankyou.html`). Used as the destination for the success redirect. |
+| `timezone` | No | `UTC` | PHP timezone string (e.g. `Europe/Rome`). Affects only the timestamp shown in notification emails. Has no effect on form behaviour or validation. |
 
-**Why this matters:** Mail servers check SPF/DKIM against the envelope sender, not the recipient. Using a `from` address on your domain significantly improves deliverability.
+### Spam Defense
+
+| Setting | Default | Notes |
+|---------|---------|-------|
+| `formKey` | `''` (disabled) | A fixed secret string shared between this config and the hidden `form_key` field in `contact.html`. Submissions with a missing or mismatched key are rejected — this is the CSRF-like protection layer. Must be identical and static in both places; never generate it dynamically. Leave blank (`''`) to disable this check entirely. |
+| `timeTrapEnabled` | `true` | Enables the time trap. When on, submissions arriving faster than `timeTrapMinMs` milliseconds after page load are rejected. Disable if users frequently use autofill or paste pre-typed messages and trigger false positives. |
+| `timeTrapMinMs` | `2000` | Minimum milliseconds between page load and submission. 2000 ms (2 seconds) stops bots that submit instantly. Raise to 3000–5000 if you see false positives from fast autofill users. |
+| `timeTrapGraceMs` | `50` | Jitter allowance added to `timeTrapMinMs` to absorb minor clock differences between browser and server. Rarely needs changing. |
+| `math_challenge` | `true` | Enables the arithmetic math challenge. The question is drawn from a pool of 15 and is seeded from `formKey` + your domain, so the same question always appears on your site but differs across installations. Disable if you prefer a frictionless form and rely on the honeypot and time trap alone. |
 
 ---
 
@@ -295,7 +314,7 @@ Understanding how Gjallarform works helps with troubleshooting and customization
 | Field | Required | Notes |
 |-------|----------|-------|
 | `fullname` (or `name`) | Yes | Accepts either field name |
-| `email` | Yes | ASCII only, validated format |
+| `email` | Yes | ASCII only; client-side format validation via regex (mirrors server-side check) |
 | `subject` | No | Defaults to site name if omitted |
 | `message` | Yes | |
 | `math_answer` | When enabled | Answer to math challenge question |
@@ -319,7 +338,6 @@ These element IDs are populated automatically by JavaScript after a successful s
 | `gjallarform-thankyou-details` | Container, set `hidden` by default |
 | `gjallarform-thankyou-name` | Submitter's first name |
 | `gjallarform-thankyou-subject` | Message subject |
-| `gjallarform-thankyou-ref` | Server-generated reference ID |
 
 #### Adding Fields
 You'll need to modify:
@@ -335,27 +353,25 @@ You'll need to modify:
 
 ### Page Filenames
 
-By default, Gjallarform expects `contact.html` and `thankyou.html` at your site root. You can customize these filenames or use subdirectories by editing the `$CFG` array:
+The default configuration expects `contact.html` and `thankyou.html` inside the `gjallarform/` directory. You can change these paths in the `$CFG` array if you move or rename the files:
 
 ```php
 $CFG = [
   // ...
-  'contactPage'  => 'forms/contact.html',    // Use subdirectory or change for directory-style URLs like /contact/ . No slashes if using directory.
-  'thankYouPage' => 'forms/success.html',    // Custom filename or change for directory-style URLs like /success/. No slashes if using directory.
+  'contactPage'  => 'gjallarform/contact.html',   // path relative to site root
+  'thankYouPage' => 'gjallarform/thankyou.html',
   // ...
 ];
 ```
 
 **Examples:**
-- `'contact.html'` → redirects to `https://yoursite.com/contact.html`
-- `'forms/contact.html'` → redirects to `https://yoursite.com/forms/contact.html`
-- `'get-in-touch.html'` → redirects to `https://yoursite.com/get-in-touch.html`
+- `'gjallarform/contact.html'` → redirects to `https://yoursite.com/gjallarform/contact.html`
+- `'contact.html'` → redirects to `https://yoursite.com/contact.html` (if moved to root)
 - `'contact'` → redirects to `https://yoursite.com/contact` (web server handles trailing slash)
-- `'contact/success'` → redirects to `https://yoursite.com/contact/success`  (web server handles trailing slash)
 
-The leading slash is handled automatically, so you can use either `contact.html` or `/contact.html`.
+The leading slash is handled automatically.
 
-**If your site uses directory-based URLs** (e.g. `/contact/` instead of `contact.html`),
+**If your site uses directory-based URLs** (e.g. `/contact/` instead of `/contact.html`),
 use just the directory name without slashes:
 
 ```php
@@ -467,7 +483,7 @@ If legitimate users are getting "too fast" errors:
 ### Form Redirects to Wrong Page
 
 1. Verify `$CFG['siteUrl']` is set correctly
-2. Check that `thankyou.html` or its equivalent exists at root
+2. Check that `gjallarform/thankyou.html` (or your configured `thankYouPage` path) exists
 3. Check `.htaccess` rules (if using Apache)
 
 ---
@@ -481,7 +497,7 @@ If legitimate users are getting "too fast" errors:
 ✅ Email header injection (sanitization of subject and all display-name fields)  
 ✅ CSRF-style attacks (form key)  
 ✅ Timing attacks on form key ( constant-time comparison via <a href="https://www.php.net/manual/en/function.hash-equals.php" target="_blank" rel="noopener noreferrer">`hash_equals()`</a> )  
-✅ Math challenge question-picking (index computed server-side when `formKey` is set)  
+✅ Math challenge question-picking (index computed server-side from `formKey` + domain — cannot be manipulated by submitter, differs across installations)  
 ✅ Oversized payloads (server-side field length limits)  
 
 ### What It Doesn't Protect Against
@@ -550,6 +566,7 @@ Gjallarform is designed for GDPR compliance when properly configured:
 
 Before going live:
 
+- [ ] **`form_disabled` set to `false`** (ships as `true` — form rejects all submissions until changed)
 - [ ] PHP 8.1+ confirmed
 - [ ] Mail server configured (SPF, DKIM)
 - [ ] Mail sending limits set
