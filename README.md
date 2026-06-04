@@ -7,6 +7,8 @@ Gjallarform is a self-contained contact form solution designed for simplicity, s
 
 Perfect for personal sites, portfolios, and small business pages running on shared hosting.
 
+**[⬇ Download latest release — v0.95 Public Beta](https://github.com/Ainz/gjallarform/releases/tag/v0.95-beta)**
+
 ---
 
 ## Table of Contents
