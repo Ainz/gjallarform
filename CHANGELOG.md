@@ -114,7 +114,7 @@ Simplified versioning from 0.99.x to 0.9x series for clarity. This release adds 
 (Previously released as 0.99-RC)
 
 ### About This Release
-First public release. Core functionality stable and tested. Suitable for production use on personal and small business sites.
+First working release. Core functionality stable and tested. Suitable for testing on personal and small business sites.
 
 ### Core Features
 
