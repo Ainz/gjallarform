@@ -9,15 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.95] - 2026-06-03
 
-### Changed
-- PHP version requirement standardized to 8.1+ throughout README (was inconsistently 8.1 in one place, 8.2 in another)
-- `formKey` configuration examples in README and `gjallarform.php` replaced with a fixed placeholder string; previous examples used `rand()` which generated a new value on every page load, misrepresenting the requirement that `formKey` must be a fixed secret matching the hidden HTML field
-- User-facing reference number removed from thank-you page — the sessionStorage ref was not guaranteed to match the server-generated `$ref`, making it misleading; the authoritative reference now appears in admin and confirmation emails only
+### About This Release
+First public beta release. The form has been running on two live sites — [conram.it](https://www.conram.it) and [rikardmalmborg.se](https://www.rikardmalmborg.se) — and tested against real-world spam conditions. Treat as beta software: review the code and test in your own environment before deploying.
 
 ### Added
 - Prominent `[!WARNING]` callout at the top of the Configuration Reference section in README noting that `form_disabled` defaults to `true` and must be set to `false` before the form will accept live submissions
-- `form_disabled` documented in the Optional Settings table
+- `form_disabled` documented in the Configuration Reference table
 - `form_disabled` added as the first item in the Deployment Checklist
+- Client-side email format validation added to `attachEmailAsciiGuard` — catches malformed addresses (e.g. missing domain dot) that the browser's native `type=email` passes silently; mirrors the server-side PHP regex
+- File headers added to all four files (copyright, version, license, GitHub link)
+
+### Changed
+- PHP version requirement standardized to 8.1+ throughout README (was inconsistently 8.1 in one place, 8.2 in another)
+- `formKey` configuration examples in README and `gjallarform.php` replaced with a fixed placeholder string; previous examples used `rand()` which generated a new value on every page load, misrepresenting the requirement that `formKey` must be a fixed secret matching the hidden HTML field
+- Math question pool expanded from 7 to 15 questions
+- Math question seeding changed from CRC32(formKey) to MD5(formKey + HTTP_HOST) — ensures different questions appear on different domains even with identical formKeys
+- All four files consolidated into `gjallarform/` directory — self-contained deployable package
+- Field order in `contact.html` template corrected to Name → Email → Subject → Message → Math challenge
+
+### Removed
+- User-facing reference number removed from thank-you page — the sessionStorage ref was not guaranteed to match the server-generated `$ref`, making it misleading; the authoritative reference now appears in admin and confirmation emails only
 
 ## [0.94] - 2026-04-21
 
