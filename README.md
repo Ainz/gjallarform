@@ -10,7 +10,6 @@ Perfect for personal sites, portfolios, and small business pages running on shar
 
 **[⬇ Download latest release — v0.95 Public Beta](https://github.com/Ainz/gjallarform/releases/tag/0.95-beta)**
 
----
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Version](https://img.shields.io/badge/Version-0.95%20beta-orange)
 ![Status](https://img.shields.io/badge/Status-Public%20Beta-yellow)
