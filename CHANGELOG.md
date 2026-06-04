@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Public Beta Release]
 
-## [0.95] - 2026-06-03
+## [0.95] - 2026-06-04
 
 ### About This Release
 First public beta release. The form has been running on two live sites — [conram.it](https://www.conram.it) and [rikardmalmborg.se](https://www.rikardmalmborg.se) — and tested against real-world spam conditions. Treat as beta software: review the code and test in your own environment before deploying.
