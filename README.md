@@ -28,33 +28,24 @@ Version 0.96 is beta software. Review the configuration, test on your own hostin
 
 These layers reduce ordinary automated abuse; they do not make a public endpoint immune to sophisticated bots, distributed attacks, or denial-of-service attacks.
 
-## Requirements
+## Simple setup
 
-- PHP 8.2 or newer; PHP 8.3 or newer is recommended
-- PHP `mail()` enabled and configured by the host
-- HTTPS
-- JavaScript enabled in the visitor's browser
-- A writable PHP system temporary directory, or another non-public writable directory for rate-limit state
-- Correct SPF and DKIM records for the sender domain
+Use this section for a standard first installation. The default protection settings are suitable for initial testing; the [advanced reference](#advanced-configuration-and-operation) explains every option.
 
-## Quick start
+### 1. Check the requirements
 
-1. Download a release archive and upload the `gjallarform/` directory to the site.
-2. Open `gjallarform/gjallarform.php` and edit the `$CFG` block.
-3. Generate a unique signing secret on a machine with PHP:
+You need:
 
-   ```sh
-   php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
-   ```
+- PHP 8.2 or newer with PHP `mail()` enabled
+- HTTPS and JavaScript
+- SPF and DKIM configured for the sending domain
+- a writable PHP temporary directory
 
-4. Paste that value into `formSecret`. It belongs only in PHP—never in HTML or JavaScript.
-5. Set `to`, `from`, `siteName`, `siteUrl`, page paths, and timezone.
-6. Update the form action and script path in `contact.html` if the files are not at `/gjallarform/`.
-7. Leave `sendConfirmation` off for the first test cycle.
-8. Set `form_disabled` to `false` only after configuration is complete.
-9. Run the [deployment tests](#deployment-tests) before linking the form publicly.
+If you are unsure about PHP mail, SPF, DKIM, or writable temporary storage, check your hosting control panel or ask your host before continuing.
 
-The deployable directory is:
+### 2. Upload the four files
+
+Download a release archive and upload its `gjallarform/` directory to the website root:
 
 ```text
 gjallarform/
@@ -64,19 +55,85 @@ gjallarform/
 └── thankyou.html
 ```
 
-The template uses:
+This gives a typical installation these URLs:
+
+- `https://www.example.com/gjallarform/contact.html`
+- `https://www.example.com/gjallarform/gjallarform.php`
+- `https://www.example.com/gjallarform/thankyou.html`
+
+### 3. Enter the essential settings
+
+Open `gjallarform/gjallarform.php` and edit only the `$CFG` block at the top. Replace these example values:
+
+| Setting | Example | What to enter |
+|---|---|---|
+| `to` | `admin@example.com` | The mailbox that should receive messages. |
+| `from` | `form-engine@example.com` | A sender address on the website's own domain. |
+| `fromDisplay` | `Example contact form` | The sender name shown in the mailbox. |
+| `replyDisplay` | `Example` | The site name used by optional confirmation emails. |
+| `siteName` | `Example` | The public name of the website. |
+| `siteUrl` | `https://www.example.com` | The fixed HTTPS origin, without a trailing slash. |
+| `httpHost` | `www.example.com` | The hostname only, used as a fallback. |
+| `contactPage` | `gjallarform/contact.html` | Path from the website root to the form page. |
+| `thankYouPage` | `gjallarform/thankyou.html` | Path from the website root to the thank-you page. |
+| `timezone` | `Europe/Stockholm` | A [PHP timezone name](https://www.php.net/manual/en/timezones.php). |
+
+If you integrate the form into another page, use that page's path for `contactPage` instead.
+
+### 4. Create the private form secret
+
+Run this command in a terminal that has PHP:
+
+```sh
+php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
+```
+
+Paste the result into `formSecret`. Use a different result for every independent installation. Keep it only in `gjallarform.php`; never copy it into HTML, JavaScript, documentation, or an issue report.
+
+### 5. Keep the safe defaults
+
+For the first test, leave these settings unchanged:
+
+```php
+'form_disabled'    => true,
+'sendConfirmation' => false,
+'timeTrapEnabled'  => true,
+'mathChallenge'    => true,
+'rateLimitEnabled' => true,
+'includeIpInEmail' => false,
+```
+
+The form ships disabled so that incomplete placeholder settings cannot send mail. Once every essential value and the secret have been replaced, set `form_disabled` to `false` on one test installation.
+
+### 6. Test before publishing
+
+Open the contact page and check that:
+
+1. Submit becomes available and an arithmetic question appears.
+2. A valid message reaches `to` and Reply addresses the visitor.
+3. A wrong answer returns to the form and preserves the draft.
+4. Repeated submissions eventually show the rate-limit error.
+5. The thank-you page and Back to contact link both use the intended paths.
+
+If any check fails, set `form_disabled` back to `true`. Complete the [full deployment tests](#full-deployment-tests) before using the form broadly.
+
+The supplied template already uses the expected endpoint:
 
 ```html
 <form class="gjallarform" action="/gjallarform/gjallarform.php" method="post" novalidate>
 ```
 
-JavaScript requests a signed challenge from that same URL. Keep the form page, script, and PHP handler on the same origin unless you deliberately add and review a CORS policy.
+Keep the page, `gjallarform.js`, and `gjallarform.php` on the same origin.
 
-## Configuration
+## Advanced configuration and operation
 
-The shipped form is disabled and contains placeholder addresses and a placeholder secret. It will not operate until these are replaced.
+The following sections cover customization, privacy choices, security boundaries, upgrades, and troubleshooting. Read them before changing the safe defaults or adapting the supplied HTML.
 
-### Mail and identity
+### Configuration reference
+
+The shipped form contains placeholder addresses and a placeholder secret. It will not operate until they are replaced and `form_disabled` is set to `false`.
+
+#### Mail and identity
 
 | Setting | Default | Purpose |
 |---|---:|---|
@@ -95,7 +152,7 @@ The shipped form is disabled and contains placeholder addresses and a placeholde
 
 Admin messages use the visitor's validated email address as `Reply-To`, so replying in a mail client reaches the visitor. The sender remains the configured on-domain address for SPF/DMARC alignment.
 
-### Signed challenge
+#### Signed challenge
 
 | Setting | Default | Purpose |
 |---|---:|---|
@@ -110,7 +167,7 @@ The browser timestamp and public `formKey` used by 0.95 have been removed. In 0.
 
 This token is an anti-tampering and anti-automation measure, not authentication or a claim of complete CSRF protection. The form is deliberately public and performs no action on an authenticated user account.
 
-### Rate limiting and privacy
+#### Rate limiting and privacy
 
 | Setting | Default | Purpose |
 |---|---:|---|
@@ -126,7 +183,7 @@ Gjallarform intentionally uses `REMOTE_ADDR`, not an untrusted forwarding header
 
 The limiter fails closed when its storage cannot be created, locked, or written. This avoids silently losing the primary protection against mail flooding; the PHP error log records the storage problem.
 
-## How a submission works
+### How a submission works
 
 1. The page loads `gjallarform.js`.
 2. JavaScript requests a no-cache challenge from `gjallarform.php?gjf_challenge=1`.
@@ -139,7 +196,7 @@ The limiter fails closed when its storage cannot be created, locked, or written.
 
 The arithmetic question adds friction to simple automation. It does not stop a person or a bot capable of reading the page and solving basic arithmetic.
 
-## Template integration
+### Template integration
 
 Required user-facing fields are `fullname` (or `name`), `email`, and `message`. `subject` is optional at the PHP layer. The template also contains:
 
@@ -153,7 +210,7 @@ Do not restore the old `form_key`, `render_ts`, or `math_index` fields. They are
 
 `gjallarform.js` attaches its submit behavior only to `form.gjallarform`; unrelated forms on the same page are not intercepted.
 
-## Errors
+### Errors
 
 Validation failures redirect to the configured contact page with an `err` query parameter. The current codes are:
 
@@ -166,7 +223,7 @@ Validation failures redirect to the configured contact page with an `err` query 
 
 The script restores a recent draft from `sessionStorage` after a redirect. It never treats browser validation as authoritative; PHP performs the server-side checks.
 
-## Deployment tests
+### Full deployment tests
 
 Use a staging copy or one low-risk live installation first.
 
@@ -185,7 +242,7 @@ Use a staging copy or one low-risk live installation first.
 
 Because production mail behavior depends on the host, the repository's automated checks cannot replace these tests.
 
-## Upgrading from 0.95
+### Upgrading from 0.95
 
 0.96 intentionally changes the anti-abuse protocol:
 
@@ -198,7 +255,7 @@ Because production mail behavior depends on the host, the repository's automated
 7. Update any custom contact markup to use `challenge_token` and the accessible honeypot structure from the template.
 8. Repeat the complete deployment test list on every site.
 
-## Security boundaries
+### Security boundaries
 
 Gjallarform helps with common contact-form problems:
 
@@ -219,7 +276,7 @@ It does not by itself stop:
 
 Use HTTPS, current PHP security releases, hosting-level request controls, outbound-mail quotas, monitoring, and backups. Report suspected vulnerabilities privately through GitHub's security-reporting interface when available; otherwise contact the maintainer without publishing exploit details first.
 
-## Privacy notes
+### Privacy notes
 
 Gjallarform is software, not a guarantee of legal compliance. The operator determines purposes, retention, lawful basis, processors, notices, and responses to data-subject requests.
 
@@ -233,7 +290,7 @@ Data can exist in several places:
 
 Adapt the example privacy sentence and link it to the site's real privacy notice. Do not claim that the form has no persistent storage merely because it has no database: email and infrastructure logs are storage.
 
-## Development
+### Development
 
 Run the local checks when PHP and Node.js are installed:
 
@@ -245,7 +302,7 @@ node --check gjallarform/gjallarform.js
 
 GitHub Actions runs the PHP checks on PHP 8.2, 8.3, 8.4, and 8.5. Publishing a GitHub release builds a deployable ZIP and attaches its SHA-256 checksum.
 
-## License and support
+### License and support
 
 Gjallarform is licensed under GPL-3.0-or-later. See [LICENSE](LICENSE).
 
