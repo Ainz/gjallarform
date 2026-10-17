@@ -5,7 +5,7 @@
 | https://conram.it/
 +--------------------------------------------------------+
 | Filename: contact.html - template file
-| Version:  0.95
+| Version:  0.96-beta
 | Author:   Rikard Malmborg
 +--------------------------------------------------------+
 | Released under GNU General Public License v3.0
@@ -29,16 +29,18 @@
       <label>Email <input type="email" name="email" required maxlength="254"></label>
       <label>Subject <input type="text" name="subject" required maxlength="300"></label>
       <label class="gjallarform__span-2">Message <textarea name="message" required maxlength="10000"></textarea></label>
-      <label id="math-challenge-label">Quick check: <span id="math-question"></span> <input type="text" name="math_answer" required pattern="[0-9]+" title="Please enter numbers only" maxlength="6"></label>
-      <!-- anti-abuse -->
-      <input type="hidden" name="render_ts" value="">
-      <input type="hidden" name="form_key" value="yoursite-change-this-to-a-long-random-secret">
-      <input type="hidden" name="math_index" value="">
-      <input type="text" name="website" class="hp" autocomplete="off">
+      <label class="gjallarform__math" hidden>Quick check: <span id="math-question"></span> <input type="text" name="math_answer" inputmode="numeric" pattern="[0-9]+" title="Please enter numbers only" maxlength="6"></label>
+      <input type="hidden" name="challenge_token" value="">
+      <div class="gjallarform__hp" aria-hidden="true">
+        <label>Leave this field empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <p class="gjallarform__status gjallarform__span-2" role="status" aria-live="polite"></p>
+      <p class="gjallarform__privacy gjallarform__span-2">This form uses temporary, pseudonymous network data to limit abuse. See our <a href="/privacy-policy.html">privacy notice</a>.</p>
       <div class="gjallarform__actions gjallarform__span-2">
-        <button type="submit">Send message</button>
+        <button type="submit" disabled>Send message</button>
       </div>
     </form>
+    <noscript>This contact form requires JavaScript to obtain its signed anti-abuse challenge.</noscript>
   </main>
   <script src="/gjallarform/gjallarform.js" defer></script>
 </body>
