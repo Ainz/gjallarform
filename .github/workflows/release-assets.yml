@@ -18,7 +18,7 @@ jobs:
         env:
           VERSION: ${{ github.event.release.tag_name }}
         run: |
-          zip -r "gjallarform-${VERSION}.zip" gjallarform
+          zip -r "gjallarform-${VERSION}.zip" gjallarform README.md LICENSE CHANGELOG.md
           sha256sum "gjallarform-${VERSION}.zip" > "gjallarform-${VERSION}.zip.sha256"
       - name: Attach package to release
         env:
