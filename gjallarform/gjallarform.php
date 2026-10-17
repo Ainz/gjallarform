@@ -171,7 +171,8 @@ function gjf_rate_limit_check(array $cfg, string $clientIp, ?int $now = null): a
   $configuredDir = trim((string)($cfg['rateLimitStorageDir'] ?? ''));
   $directory = $configuredDir !== ''
     ? rtrim($configuredDir, '/\\')
-    : rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR . 'gjallarform-rate-limit';
+    : rtrim(sys_get_temp_dir(), '/\\') . DIRECTORY_SEPARATOR
+      . 'gjallarform-rate-limit-' . substr(hash('sha256', (string)$cfg['formSecret']), 0, 12);
 
   if (!is_dir($directory) && !@mkdir($directory, 0700, true) && !is_dir($directory)) {
     error_log('Gjallarform: cannot create rate-limit storage directory');
@@ -360,13 +361,6 @@ if (!empty($CFG['mathChallenge']) && is_array($challengePayload)) {
   }
 }
 
-$clientIp = (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown');
-$rateLimit = gjf_rate_limit_check($CFG, $clientIp);
-if (!$rateLimit['allowed']) {
-  header('Retry-After: ' . $rateLimit['retryAfter']);
-  gjf_back_with_error($BASE_URL, $CFG, 'rate_limited');
-}
-
 if ($name === '') gjf_back_with_error($BASE_URL, $CFG, 'name_missing');
 if ($email === '') gjf_back_with_error($BASE_URL, $CFG, 'email_missing');
 if ($message === '') gjf_back_with_error($BASE_URL, $CFG, 'message_missing');
@@ -376,6 +370,14 @@ if (strlen($subject) > 300) gjf_back_with_error($BASE_URL, $CFG, 'subject_too_lo
 if (strlen($message) > 10000) gjf_back_with_error($BASE_URL, $CFG, 'message_too_long');
 if (preg_match('/[^\x00-\x7F]/', $email)) gjf_back_with_error($BASE_URL, $CFG, 'email_ascii_only');
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) gjf_back_with_error($BASE_URL, $CFG, 'email_invalid');
+
+// Count only submissions that have passed anti-abuse and field validation.
+$clientIp = (string)($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$rateLimit = gjf_rate_limit_check($CFG, $clientIp);
+if (!$rateLimit['allowed']) {
+  header('Retry-After: ' . $rateLimit['retryAfter']);
+  gjf_back_with_error($BASE_URL, $CFG, 'rate_limited');
+}
 
 if ($subject === '') $subject = $CFG['siteName'] . ' Contact';
 $subject = trim((string)preg_replace('/[\x00-\x1F\x7F]+/', ' ', $subject));
@@ -398,7 +400,7 @@ $adminHeaders = [
   'Content-Type: text/plain; charset=UTF-8',
   'From: ' . $CFG['fromDisplay'] . ' <' . $CFG['from'] . '>',
   'Reply-To: ' . $email,
-  'Auto-Submitted: no',
+  'Auto-Submitted: auto-generated',
 ];
 $envelope = '-f ' . $CFG['from'];
 $sent = @mail($CFG['to'], $mailSubject, $adminBody, implode("\r\n", $adminHeaders), $envelope);

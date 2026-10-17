@@ -115,12 +115,12 @@ This token is an anti-tampering and anti-automation measure, not authentication 
 | Setting | Default | Purpose |
 |---|---:|---|
 | `rateLimitEnabled` | `true` | Enables fixed-window limiting based on `REMOTE_ADDR`. |
-| `rateLimitMaxAttempts` | `5` | Maximum accepted POST attempts in one window. Validation failures count. Honeypot hits do not. |
+| `rateLimitMaxAttempts` | `5` | Maximum validated submissions in one window. Honeypot hits and validation failures do not consume capacity. |
 | `rateLimitWindowSec` | `600` | Window duration in seconds. |
 | `rateLimitStorageDir` | system temp | Optional non-public writable directory for limiter state. |
 | `includeIpInEmail` | `false` | Includes the raw visitor IP in the admin email only when enabled. |
 
-Limiter filenames are HMACs of the client IP and the server-only secret; file content contains only a window start and counter. No raw IP is written to the limiter directory. PHP sees the raw IP long enough to calculate the keyed hash. Stale counters are removed opportunistically, and many hosts also clean their system temporary directory automatically.
+Each installation gets a secret-derived default subdirectory. Limiter filenames are HMACs of the client IP and the server-only secret; file content contains only a window start and counter. No raw IP is written to the limiter directory. PHP sees the raw IP long enough to calculate the keyed hash. Stale counters are removed opportunistically, and many hosts also clean their system temporary directory automatically.
 
 Gjallarform intentionally uses `REMOTE_ADDR`, not an untrusted forwarding header. If the site is behind a reverse proxy or CDN, all visitors may appear under the proxy address. Configure rate limiting at the proxy, or add provider-specific trusted-proxy handling only after reviewing that provider's documentation.
 
