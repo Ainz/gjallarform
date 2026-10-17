@@ -1,0 +1,27 @@
+name: Release assets
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - name: Build deployable archive and checksum
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          zip -r "gjallarform-${VERSION}.zip" gjallarform README.md LICENSE CHANGELOG.md
+          sha256sum "gjallarform-${VERSION}.zip" > "gjallarform-${VERSION}.zip.sha256"
+      - name: Attach package to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ github.event.release.tag_name }}
+        run: gh release upload "$VERSION" "gjallarform-${VERSION}.zip" "gjallarform-${VERSION}.zip.sha256" --clobber

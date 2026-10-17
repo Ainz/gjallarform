@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Public Beta Release]
 
+## [0.96] - 2026-10-17
+
+### Security
+- Replaced the public static `formKey` and client-controlled `render_ts` with a
+  short-lived HMAC-signed challenge containing the server-issued timestamp,
+  nonce, and math-question index
+- Added fail-closed, file-backed fixed-window rate limiting based on a keyed hash
+  of `REMOTE_ADDR`; raw IP addresses are not written to limiter files
+- Made submitter confirmation copies opt-in (`sendConfirmation=false`) to reduce
+  email-reflection and mailbox-flooding risk
+- Admin notifications now use the validated visitor address as `Reply-To`
+- Added strict validation for configured sender/recipient addresses and kept
+  redirect hosts independent of request headers
+
+### Added
+- Challenge endpoint used by `gjallarform.js` before enabling submission
+- Configurable challenge lifetime, rate limit, confirmation copy, and IP-email policy
+- Security helper tests and CI across PHP 8.2, 8.3, 8.4, and 8.5
+- Release automation that attaches a deployable ZIP and SHA-256 checksum
+- Visible privacy-notice placeholder and an accessible-hidden honeypot structure
+
+### Changed
+- Minimum supported PHP version is now 8.2; PHP 8.3 or newer is recommended
+- `math_challenge` was renamed to `mathChallenge`
+- JavaScript submission handling is scoped to `form.gjallarform`
+- The math question is selected by PHP and no longer duplicated in JavaScript
+- Documentation now describes the protections and privacy boundaries without
+  claiming CSRF protection, guaranteed compliance, or protection from human spam
+- Raw visitor IP inclusion in admin mail is disabled by default
+
+### Removed
+- `formKey`, `form_key`, `render_ts`, and `math_index`
+- The browser-side MD5 implementation and duplicated math-question list
+- The unconditional promise of a confirmation email on the thank-you page
+
+### Upgrade note
+Replace all four deployable files together. A 0.95 HTML/JavaScript client is not
+compatible with the 0.96 PHP handler. See "Upgrading from 0.95" in the README.
+
 ## [0.95] - 2026-06-04
 
 ### About This Release
