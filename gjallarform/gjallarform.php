@@ -83,7 +83,9 @@ function gjf_base64url_encode(string $value): string {
 function gjf_base64url_decode(string $value): string|false {
   if ($value === '' || preg_match('/[^A-Za-z0-9_-]/', $value)) return false;
   $padding = (4 - strlen($value) % 4) % 4;
-  return base64_decode(strtr($value, '-_', '+/') . str_repeat('=', $padding), true);
+  $decoded = base64_decode(strtr($value, '-_', '+/') . str_repeat('=', $padding), true);
+  if ($decoded === false || gjf_base64url_encode($decoded) !== $value) return false;
+  return $decoded;
 }
 
 function gjf_secret_is_configured(array $cfg): bool {
