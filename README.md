@@ -8,7 +8,7 @@ Gjallarform is intended for personal sites, portfolios, and small organizations 
 
 Version 0.96 is beta software. Review the configuration, test on your own hosting, and keep your hosting provider's outbound-mail limits enabled.
 
-[Introduction and project background](https://www.conram.it/soholab/gjallarform.html) · [Releases](https://github.com/Ainz/gjallarform/releases) · [Issues](https://github.com/Ainz/gjallarform/issues) · [Discussions](https://github.com/Ainz/gjallarform/discussions)
+[Introduction and project background](https://www.conram.it/soholab/gjallarform-intro.html) · [Releases](https://github.com/Ainz/gjallarform/releases) · [Issues](https://github.com/Ainz/gjallarform/issues) · [Discussions](https://github.com/Ainz/gjallarform/discussions)
 
 ![License](https://img.shields.io/badge/License-GPL%20v3-blue)
 ![Status](https://img.shields.io/badge/Status-Public%20Beta-yellow)
